@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include "nnet.h"
+
+void irisout(double *out, int N, double *clamp) {
+	int i;
+	double temp;
+
+	temp = out[0];
+	clamp[0] = 1.0;
+
+	for (i = 1; i < N; ++i) {
+		if (out[i] > temp) {
+			clamp[i] = 1.0;
+			clamp[i - 1] = 0.0;
+		}
+		else {
+			clamp[i] = 0.0;
+		}
+	}
+}
+
+int main() {
+	int i, j, t, inp, out, size;
+
+	ndata_object obj;
+	nnet_object nnet;
+	lm_object lm;
+
+	inp = 4;
+	out = 1;
+	size = 150;
+	int arch[3] = { 2, 3, 3 };
+	int actfcn[3] = { 0, 2, 2 };
+
+	obj = ndata_init(inp, out, size);
+	nnet = nnet_init(3, arch, actfcn);
+
+	lm = lm_init(nnet, obj);
+
+	file_rev_enter(lm->data,"Fisher.txt", "	", 0);
+
+
+	ndata_check(lm->data);
+
+
+	lm_free(lm);
+	ndata_free(obj);
+	nnet_free(nnet);
+	return 0;
+}

@@ -1,7 +1,10 @@
 #ifndef NNET_H_
 #define NNET_H_
 
-#include "netint.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+#include "netdata.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,8 +27,8 @@ struct nnet_set {
 	int actfcn[102];// 0 - NULL, 1 - purelin, 2 - logsig, 3 - tansig. By default set first element to 0 as input layer doesn't have any activation function
 	int normmethod;// 0 - NULL, 1 - Minmax {-1,1}, 2 - Std (Mean = 0, Variance = 1}. Default = 1 (Minmax) 
 	char trainfcn[50];
+	char trainmethod[20];// Options "online" or "batch"
 	double *weight;// Weights vector including biases
-	double *delta; // delta Vector
 	double *gradient; // Gradient Vector
 	double *tout; // Output Vector contains outputs at all the nodes including hidden ones during the current iteration.
 	double *input;// current input
@@ -37,15 +40,32 @@ struct nnet_set {
 	double *dstd;
 	double *tmean;
 	double *tstd;
+	int datasize;
 	int lw;
 	int ld;
 	int lm1;
 	int nmax;
 	int emax;
+	int generalize;
+	int validate;
+	int batchsize;// batchsize . Used only if the batch method selected.
+	double qp_threshold;
+	double qp_shrink_factor;
+	double qp_max_factor;
+	double qp_decay;
+	double rp_eta_p;
+	double rp_eta_n;
+	double rp_delta_min;
+	double rp_init_upd;
+	double rp_max_step;
+	double rp_zero_tol;
 	double mse;
-	double tmse;
+	double tmse; // Training Set MSE
+	double gmse; // Generalization Set MSE
+	double imse;
 	double eta;
 	double alpha;
+	double steepness;
 	double eta_inc;
 	double eta_dec;
 	double perf_inc;
@@ -63,17 +83,30 @@ struct nnet_set {
 	double params[1];
 };
 
+typedef struct lm_set* lm_object;
+
+lm_object lm_init(nnet_object nnet, ndata_object ndata);
+
+struct lm_set {
+	nnet_object net;
+	ndata_object data;
+};
+
 void set_learning_rate(nnet_object obj, double eta);
 
 void set_momentum(nnet_object obj, double alpha);
 
 void set_target_mse(nnet_object obj, double mse);
 
+void set_generalization_mse(nnet_object obj, double gmse);
+
 void set_max_epoch(nnet_object obj, int max_epoch);
 
 void set_training_ratios(nnet_object obj, double tratio, double gratio, double vratio);
 
 void set_trainfcn(nnet_object obj, char *trainfcn);
+
+void set_trainmethod(nnet_object obj,char *method, int batchsize);// batchsize is only used if method is set to "batch". online training is done incrementally using one set of data at a time
 
 void set_norm_method(nnet_object obj, int nmethod);
 
@@ -87,9 +120,9 @@ void initweightsnw(nnet_object obj);
 
 void initweights_seed(nnet_object obj, int seed);
 
-void feedforward(nnet_object obj, double *inp, int leninp, int lenoup, double *oup);
+void feedforward(nnet_object obj, double *inp, int leninp, int lenoup, double *oup,double *tempi, double *tempo);
 
-void backpropagate(nnet_object obj, double *output, double *desired, int lenoup);
+void backpropagate(nnet_object obj, double *output, double *desired, int lenoup, double *delta, double *tinp);
 
 void mapminmax(double *x, int N, double ymin, double ymax, double *y);
 
@@ -113,9 +146,13 @@ void train_mstd(nnet_object obj, int size, double *inp, double *out);
 
 void train(nnet_object obj, int tsize, double *data, double *target);
 
+void func_lm(double *x, int MP, int N, void *params);
+
 void sim(nnet_object obj, int size, double *data, double *output);
 
 void nnet_free(nnet_object obj);
+
+void lm_free(lm_object lm);
 
 #ifdef __cplusplus
 }

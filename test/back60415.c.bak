@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include "nnet.h"
+
+void createsine(double *x, int N, double *fx) {
+	int i;
+	for (i = 0; i < N; ++i) {
+		fx[i] = sin(x[i]);
+		printf("X %g f(X) %g \n", x[i], fx[i]);
+	}
+}
+
+int main() {
+	int N, i, leninp, lenoup;
+	int tsize;
+	double *pn, *tn,*pmax, *pmin, *tmax, *tmin;
+	nnet_object obj;
+
+	N = 3;
+	tsize = 4;
+
+	double p[8] = { -1, 0, -1, 5, 2, 0, 2, 5 };
+	double gp[4] = { -1, -1, 1, 1 };
+
+	int arch[3] = { 2, 3, 1 };
+	double output[1] = { 0.0 };
+	int actfcn[3] = { 0, 3, 1 };
+
+	leninp = arch[0];
+	lenoup = arch[2];
+
+	pn = (double*)malloc(sizeof(double)* tsize * leninp);
+	tn = (double*)malloc(sizeof(double)* tsize * lenoup);
+
+	pmax = (double*)malloc(sizeof(double)* leninp);
+	pmin = (double*)malloc(sizeof(double)* leninp);
+
+	tmax = (double*)malloc(sizeof(double)* lenoup);
+	tmin = (double*)malloc(sizeof(double)* lenoup);
+
+	premnmx(tsize, p, leninp, gp, lenoup, pn,tn, pmin, pmax, tmin, tmax);
+
+	obj = nnet_init(N, arch, actfcn);
+	set_training_ratios(obj,1.0, 0.0, 0.0);
+	obj->emax = 500;
+	obj->tmse = 1e-05;
+	train(obj, tsize, pn, tn);
+
+	for (i = 0; i < obj->lw; ++i) {
+		printf("W %g ", obj->weight[i]);
+	}
+
+	for (i = 0; i < tsize; ++i) {
+		feedforward(obj, pn + i*leninp, leninp, lenoup, output);
+		printf("\n%g %g ", tn[i], output[0]);
+	}
+
+	nnet_free(obj);
+	free(pn);
+	free(tn);
+	free(pmax);
+	free(pmin);
+	free(tmax);
+	free(tmin);
+	return 0;
+}

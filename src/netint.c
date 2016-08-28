@@ -4,15 +4,26 @@ void logsig(double *x, double N, double *y) {
 	int i;
 	for (i = 0; i < N; ++i) {
 		y[i] = (1.0 / (1.0 + exp(-x[i])));
+		if (y[i] != y[i]) {
+			y[i] = signx(x[i]) * 0.5 + 0.5;
+		}
 	}
 }
 
 void tansig(double *x, double N, double *y) {
 	int i;
+	double a, b;
 	for (i = 0; i < N; ++i) {
 		//y[i] = (1.0 - exp(-2 * x[i])) / (1.0 + exp(-2 * x[i]));
 		//y[i] = -1.0 + 2.0 / (1.0 + exp(-2 * x[i]));
-		y[i] = tanh(x[i]);
+		a = exp(x[i]);
+		b = exp(-x[i]);
+		y[i] = (a-b) / (a+b);
+		if (y[i] != y[i]) {
+			y[i] = signx(x[i]);
+		}
+		// y[i] = tanh(x[i]);
+		
 	}
 }
 
@@ -35,7 +46,44 @@ void purelin(double *x, double N, double *y) {
 	}
 }
 
-int imax(int* x, int N) {
+//Clip
+
+double clip_value(double x, double lo, double hi) {
+	double clip;
+	clip = x;
+	if (x < lo) {
+		clip = lo;
+	}
+
+	if (x > hi) {
+		clip = hi;
+	}
+	return clip;
+}
+
+// Derivatives
+
+double logsig_der(double value) {
+	double temp2,df;
+
+	temp2 = clip_value(value,0.01, 0.99);
+
+	df = temp2 * (1.0 - temp2);
+
+	return df;
+}
+
+double tansig_der(double value) {
+	double temp2, df;
+
+	temp2 = clip_value(value, -0.98, 0.98);
+
+	df = (1.0 - temp2 * temp2);
+
+	return df;
+}
+
+int intmax(int* x, int N) {
 	int m, i;
 
 	m = -INT_MAX;

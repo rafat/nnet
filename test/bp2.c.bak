@@ -1,0 +1,289 @@
+static void neuronlayer_logsig_oup2(double *inp, int N, int S, double *weights, double *oup) {
+	int i, j, itr, N1;
+	double* tmp;
+	tmp = (double*)malloc(sizeof(double)* S);
+	/*
+	N - Number of Inputs going into each Neuron in the Layer
+	S - Number of Neutrons in the Layer
+	weights - (S X N) Each row contains N weights corresponding to N inputs going into the Neuron
+	where i =0,..,S-1 and j = 0,.,.,N-1
+	inp - (N X 1) Inputs going into the layer of neutron
+	*/
+	N1 = N + 1;
+	for (j = 0; j < S; ++j) {
+		itr = j * N1;
+		tmp[j] = - weights[itr];
+		for (i = 1; i < N1; ++i) {
+			tmp[j] += inp[i - 1] * weights[itr + i];
+		}
+	}
+
+	logsig(tmp, S, oup);
+
+	free(tmp);
+}
+
+static void neuronlayer_tansig_oup2(double *inp, int N, int S, double *weights, double *oup) {
+	int i, j, itr, N1;
+	double* tmp;
+	tmp = (double*)malloc(sizeof(double)* S);
+	/*
+	N - Number of Inputs going into each Neuron in the Layer
+	S - Number of Neutrons in the Layer
+	weights - (S X N) Each row contains N weights corresponding to N inputs going into the Neuron
+	where i =0,..,S-1 and j = 0,.,.,N-1
+	inp - (N X 1) Inputs going into the layer of neutron
+	*/
+	N1 = N + 1;
+	for (j = 0; j < S; ++j) {
+		itr = j * N1;
+		tmp[j] = -weights[itr];
+		for (i = 1; i < N1; ++i) {
+			tmp[j] += inp[i - 1] * weights[itr + i];
+		}
+	}
+
+
+	tansig(tmp, S, oup);
+
+	free(tmp);
+}
+
+static void neuronlayer_purelin_oup2(double *inp, int N, int S, double *weights, double *oup) {
+	int i, j, itr, N1;
+	double* tmp;
+	tmp = (double*)malloc(sizeof(double)* S);
+	/*
+	N - Number of Inputs going into each Neuron in the Layer
+	S - Number of Neutrons in the Layer
+	weights - (S X N) Each row contains N weights corresponding to N inputs going into the Neuron
+	where i =0,..,S-1 and j = 0,.,.,N-1
+	inp - (N X 1) Inputs going into the layer of neutron
+	*/
+	N1 = N + 1;
+	for (j = 0; j < S; ++j) {
+		itr = j * N1;
+		tmp[j] = -weights[itr];
+		for (i = 1; i < N1; ++i) {
+			tmp[j] += inp[i - 1] * weights[itr + i];
+		}
+	}
+
+
+	purelin(tmp, S, oup);
+
+	free(tmp);
+}
+
+
+
+void feedforward2(nnet_object obj, double *inp, int leninp, int lenoup, double *oup) {
+	int lm1, i, N, S, itr, itr2, j, N1;
+	lm1 = obj->lm1;
+	double *tempi, *tempo;// To-DO Add a temp vector of length 2*nmax to the object obj
+
+	tempi = (double*)malloc(sizeof(double)* obj->nmax);
+	tempo = (double*)malloc(sizeof(double)* obj->nmax);
+
+	if (leninp != obj->arch[0] || lenoup != obj->arch[lm1]) {
+		printf("\nError The Neural network is designed for %d Inputs and %d Outputs", obj->arch[0], obj->arch[lm1]);
+		exit(0);
+	}
+
+	N = obj->arch[0];
+	for (i = 0; i < N; ++i) {
+		tempi[i] = inp[i];
+	}
+	itr = 0;
+	itr2 = 0;
+	for (i = 0; i < lm1; ++i) {
+		S = obj->arch[i + 1];
+		N1 = N + 1;
+		if (obj->actfcn[i + 1] == 1) {
+			neuronlayer_purelin_oup2(tempi, N, S, &obj->weight[itr], tempo);
+		}
+		else if (obj->actfcn[i + 1] == 2) {
+			neuronlayer_logsig_oup2(tempi, N, S, &obj->weight[itr], tempo);
+		}
+		else if (obj->actfcn[i + 1] == 3) {
+			neuronlayer_tansig_oup2(tempi, N, S, &obj->weight[itr], tempo);
+		}
+		itr += S*N1;
+		for (j = 0; j < S; ++j) {
+			obj->tout[j + itr2] = tempo[j];
+			tempi[j] = tempo[j];
+		}
+		N = S;
+		itr2 += S;
+	}
+
+	for (i = 0; i < lenoup; ++i) {
+		oup[i] = tempo[i];
+	}
+
+	for (i = 0; i < leninp; ++i) {
+		obj->input[i] = inp[i];
+	}
+
+	free(tempi);
+	free(tempo);
+
+}
+
+void backpropagate2(nnet_object obj, double *output, double *desired, int lenoup) {
+	int lm1, i, lw, ld, loup, itr, jinit, j, k, kfin, N, itr2, itr4;
+	int S, itr3, index, in0;
+	double temp;
+	double *tinp;
+
+	lw = obj->lw;
+	ld = obj->ld;
+	lm1 = obj->lm1;
+
+	loup = obj->arch[lm1];
+
+	if (lenoup != loup) {
+		printf("Outputs of this Network are of length %d \n", loup);
+	}
+
+	tinp = (double*)malloc(sizeof(double)* (ld + obj->arch[0]));
+
+	// Local Gradients Calculation
+	itr = ld - loup;
+	obj->mse = 0.0;
+
+	if (obj->actfcn[lm1] == 1) {
+		for (i = 0; i < loup; ++i) {
+			//printf("Wcv %g ", output[i]);
+			temp = (desired[i] - output[i]);
+			obj->gradient[itr + i] = temp;
+			obj->mse += temp*temp;
+		}
+	}
+	else if (obj->actfcn[lm1] == 2) {
+		for (i = 0; i < loup; ++i) {
+			temp = (desired[i] - output[i]);
+			obj->gradient[itr + i] = temp * obj->tout[itr + i] * (1.0 - obj->tout[itr + i]);
+			obj->mse += temp*temp;
+		}
+	}
+	else if (obj->actfcn[lm1] == 3) {
+		for (i = 0; i < loup; ++i) {
+			temp = (desired[i] - output[i]);
+			obj->gradient[itr + i] = temp * (1.0 + obj->tout[itr + i]) * (1.0 - obj->tout[itr + i]);
+			obj->mse += temp*temp;
+		}
+	}
+
+	obj->mse /= 2.0;
+
+	for (i = lm1 - 1; i > 0; --i) {
+		if (obj->actfcn[i] == 1) {
+			N = obj->arch[i];
+			jinit = itr - N;
+			kfin = obj->arch[i + 1];
+			lw = lw - obj->lweight[i + 1];
+			itr2 = 1;
+			for (j = jinit; j < itr; ++j) {
+				temp = 0.0;
+				for (k = 0; k < kfin; ++k) {
+					temp += obj->gradient[itr + k] * obj->weight[lw + itr2];// add weights
+					//printf("W %d ", lw + itr2);
+					itr2 += (N + 1);
+				}
+				itr2 = j - jinit + 2;
+				obj->gradient[j] = temp;
+			}
+			itr -= N;
+		}
+		else if (obj->actfcn[i] == 2) {
+			N = obj->arch[i];
+			jinit = itr - N;
+			//logsig(obj->tout + jinit, N, beta + jinit);
+			kfin = obj->arch[i + 1];
+			lw = lw - obj->lweight[i + 1];
+			itr2 = 1;
+			for (j = jinit; j < itr; ++j) {
+				temp = 0.0;
+				for (k = 0; k < kfin; ++k) {
+					temp += obj->gradient[itr + k] * obj->weight[lw + itr2];// add weights
+					//printf("W %d ", lw + itr2);
+					itr2 += (N + 1);
+				}
+				itr2 = j - jinit + 2;
+				obj->gradient[j] = temp * obj->tout[j] * (1.0 - obj->tout[j]);
+				//printf("temp %g %g ", temp, obj->tout[j]);
+			}
+			itr -= N;
+		}
+		else if (obj->actfcn[i] == 3) {
+			N = obj->arch[i];
+			jinit = itr - N;
+			//logsig(obj->tout + jinit, N, beta + jinit);
+			kfin = obj->arch[i + 1];
+			lw = lw - obj->lweight[i + 1];
+			itr2 = 1;
+			for (j = jinit; j < itr; ++j) {
+				temp = 0.0;
+				for (k = 0; k < kfin; ++k) {
+					temp += obj->gradient[itr + k] * obj->weight[lw + itr2];// add weights
+					//printf("W %d ", lw + itr2);
+					itr2 += (N + 1);
+				}
+				itr2 = j - jinit + 2;
+				obj->gradient[j] = temp * (1.0 + obj->tout[j]) * (1.0 - obj->tout[j]);
+			}
+			itr -= N;
+		}
+	}
+
+
+	// Calculate weights and deltas
+
+	lw = obj->lw;
+	in0 = obj->arch[0];
+
+	for (i = 0; i < in0; ++i) {
+		tinp[i] = obj->input[i];
+	}
+
+	for (i = in0; i < in0 + ld; ++i) {
+		tinp[i] = obj->tout[i - in0];
+	}
+
+
+	itr3 = 0;
+	itr2 = itr4 = 0;
+
+	for (i = 0; i < lm1; ++i) {
+		N = obj->arch[i] + 1;
+		S = obj->arch[i + 1];
+		for (j = 0; j < S; ++j) {
+			itr = j * N;// iterates over one row of weights
+			index = itr3 + itr;
+			temp = obj->delta[index];
+			obj->delta[index] = obj->alpha * temp - obj->eta * obj->gradient[itr2 + j];
+			obj->weight[index] += obj->delta[index];
+			//printf(" ind %d", itr2+j);
+
+			for (k = 1; k < N; ++k) {
+				index = itr3 + itr + k;
+				temp = obj->delta[index];
+				obj->delta[index] = obj->alpha * temp + obj->eta * tinp[itr4 + k - 1] * obj->gradient[itr2 + j];
+				obj->weight[index] += obj->delta[index];
+				//printf(" ind %d", itr + k - 1);
+			}
+
+		}
+		itr3 += S * N;// iterates over all the weights going into a layer
+		itr2 += S;// iterates over each output layer
+		itr4 += (N - 1);// iterates over each input layer
+		//printf("\n itr %d itr2 %d itr3 %d \n", itr, itr2, itr3);
+	}
+	//printf("WT %g \n", obj->weight[0]);
+
+
+	free(tinp);
+
+}
+

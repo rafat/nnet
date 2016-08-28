@@ -9,6 +9,8 @@
 #include <time.h>
 #include <math.h>
 
+#include "optimc.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,7 +23,13 @@ void hardlim(double *x, double N, double *y);
 
 void purelin(double *x, double N, double *y);
 
-int imax(int* x, int N);
+double clip_value(double x, double lo, double hi);
+
+double logsig_der(double value);
+
+double tansig_der(double value);
+
+int intmax(int* x, int N);
 
 double mean(double* vec, int N);
 
