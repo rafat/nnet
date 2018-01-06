@@ -4,7 +4,6 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-#include "netdata.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,14 +82,39 @@ struct nnet_set {
 	double params[1];
 };
 
-typedef struct lm_set* lm_object;
+typedef struct ndata_set* ndata_object;
 
-lm_object lm_init(nnet_object nnet, ndata_object ndata);
+ndata_object ndata_init(int inputs, int outputs, int patterns);
 
-struct lm_set {
-	nnet_object net;
-	ndata_object data;
+struct ndata_set {
+	int I;
+	int O;
+	int P;
+	int tsize;
+	int gsize;
+	int vsize;
+	double *data;
+	double *target;
+	double params[1];
 };
+
+void interleave(double *inp, int size, int M, double *oup);
+
+void data_enter(ndata_object obj, double *data, double *target);
+
+void data_interleave_enter(ndata_object obj, double *data, double *target);
+
+void csvreader(ndata_object obj, const char *filepath, const char *delimiter, int isHeader);
+
+void file_enter(ndata_object obj, const char *filepath, const char *delimiter, int isHeader);
+
+void file_rev_enter(ndata_object obj, const char *filepath, const char *delimiter, int isHeader);
+
+void file_sep_line_enter(ndata_object obj, const char *filepath, const char *delimiter, int isHeader);
+
+void ndata_check(ndata_object obj);
+
+void ndata_free(ndata_object obj);
 
 void set_learning_rate(nnet_object obj, double eta);
 
@@ -148,13 +172,10 @@ void train_mstd(nnet_object obj, int size, double *inp, double *out);
 
 void train(nnet_object obj, int tsize, double *data, double *target);
 
-void func_lm(double *x, int MP, int N, void *params);
-
 void sim(nnet_object obj, int size, double *data, double *output);
 
 void nnet_free(nnet_object obj);
 
-void lm_free(lm_object lm);
 
 #ifdef __cplusplus
 }

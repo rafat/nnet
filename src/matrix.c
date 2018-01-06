@@ -191,7 +191,7 @@ void dtranspose(double *sig, int rows, int cols,double *col) {
 void stranspose(double *sig, int rows, int cols,double *col) {
 	int t,u;
 	register int i,j;
-	#pragma omp parallel for private(i,j,t,u)
+//	#pragma omp parallel for private(i,j,t,u)
 	for (i=0; i < rows; i++) {
 		t = i * cols;
 		u = 0;
@@ -241,7 +241,7 @@ void ctranspose(double *sig, int rows, int cols,double *col) {
 	int r,c;
 	int block;
 
-	block = (int) BLOCKSIZE;
+	block = (int) TBLOCK;
 	r= rows;
 	c = cols;
 	if (rows >= block || cols >= block)  {
@@ -254,12 +254,81 @@ void ctranspose(double *sig, int rows, int cols,double *col) {
 void mtranspose(double *sig, int rows, int cols,double *col) {
 	int block;
 	
-	block = (int) BLOCKSIZE * 16;
+	block = (int) TBLOCK;
 
 	if (rows >= block && cols >= block)  {
 		ctranspose(sig,rows,cols,col);
 	} else {
 		stranspose(sig,rows,cols,col);
+	}
+}
+
+void itranspose(double *A, int M, int N) {
+	int i, j, p, iter, iter2;
+	double *buf;
+	double temp;
+
+	if (M == N) {
+		for (i = 0; i < N; ++i) {
+			for (j = i + 1; j < N; ++j) {
+				temp = A[i + j*N];
+				A[i + j*N] = A[j + i*N];
+				A[j + i*N] = temp;
+			}
+		}
+	} else if (M > N) {
+
+		p = M - N;
+		buf = (double*)malloc(sizeof(double)* p * N);
+
+		memcpy(buf, A + N * N, sizeof(*A)*p*N);
+
+		for (i = 0; i < N; ++i) {
+			for (j = i + 1; j < N; ++j) {
+				temp = A[i + j*N];
+				A[i + j*N] = A[j + i*N];
+				A[j + i*N] = temp;
+			}
+		}
+
+		for (i = N - 1; i >= 1; --i) {
+			memmove(A + i*M, A + i*N, sizeof(*A)*M);
+		}
+
+
+		for (i = 0; i < N; ++i) {
+			iter = N + i * M;
+			for (j = 0; j < p; ++j) {
+				A[iter + j] = buf[j*N + i];
+			}
+		}
+
+		free(buf);
+	}
+	else if (M < N) {
+		p = N - M;
+		buf = (double*)malloc(sizeof(double)* p * M);
+
+		for (i = 0; i < M; ++i) {
+			iter = M + i*N;
+			for (j = 0; j < p; ++j) {
+				buf[j*M + i] = A[iter + j];
+			}
+		}
+
+		for (i = 1; i < M; ++i) {
+			memmove(A + i*M, A + i * N, sizeof(*A)*M);
+		}
+
+		for (i = 0; i < M; ++i) {
+			for (j = i + 1; j < M; ++j) {
+				temp = A[i + j*M];
+				A[i + j*M] = A[j + i*M];
+				A[j + i*M] = temp;
+			}
+		}
+		memcpy(A + M*M, buf, sizeof(*A)*p*M);
+		free(buf);
 	}
 }
 
@@ -2302,6 +2371,25 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 	return ierr;
 }
 
+int svd_transpose(double *A, int M, int N, double *U, double *V, double *q) {
+	int ret;
+	/* Call this routine if M < N
+	* U = MXM
+	* V - NXM
+	* Q - MX1
+	*/
+
+	if (M >= N) {
+		printf("M>=N. Use svd routine.\n");
+		exit(-1);
+	}
+
+	mtranspose(A, M, N, V);
+
+	ret = svd(V, N, M, V, U, q);
+	return ret;
+}
+
 static int rank_c(double *A, int M,int N) {
 	int i,rnk,ret;
 	double eps,tol,szmax,qmax;
@@ -2323,6 +2411,9 @@ static int rank_c(double *A, int M,int N) {
 	qmax = q[0];
 	if ( ret != 0) {
 		printf("Failed to Compute SVD");
+		free(U);
+		free(V);
+		free(q);
 		return -1;
 	}
 
@@ -2359,5 +2450,75 @@ int rank(double *A, int M,int N) {
 	free(AT);
 	return rnk;
 
+}
+
+int lls_svd_multi(double *A, double *b, int M,int N, double *x) {
+	int rnk, ret, i;
+	double *U, *V, *q, *UT, *d;
+	double eps, tol, szmax, qmax;
+
+	if (M < N) {
+		printf("Rows (M) should be greater than Columns (B) \n");\
+		return -1;
+	}
+
+	U = (double*)malloc(sizeof(double)* M*N);
+	V = (double*)malloc(sizeof(double)* N*N);
+	q = (double*)malloc(sizeof(double)* N);
+	UT = (double*)malloc(sizeof(double)* M*N);
+	d = (double*)malloc(sizeof(double)* N);
+	/*
+	The code returns -1 if SVD computation fails else it returns the rank of the matrix A (and the real size of vector x)
+	*/
+	ret = svd(A, M, N, U, V, q);
+
+	if (ret != 0) {
+		printf("Failed to Compute SVD");
+		free(U);
+		free(V);
+		free(q);
+		free(UT);
+		free(d);
+		return -1;
+	}
+
+	szmax = (double)M;
+
+	eps = macheps();
+	rnk = 0;
+
+	qmax = q[0];
+
+	tol = qmax*szmax *eps;
+
+	for (i = 0; i < N; ++i) {
+		if (q[i] > tol) {
+			rnk++;
+		}
+	}
+
+	mtranspose(U, M, N, UT);
+
+	d = (double*)malloc(sizeof(double)* N);
+
+	mmult(UT, b, d, N, M, 1);
+
+	for (i = 0; i < rnk; ++i) {
+		d[i] /= q[i];
+	}
+
+	for (i = rnk; i < N; ++i) {
+		d[i] = 0.0;
+	}
+
+	mmult(V, d, x, N, N, 1);
+
+	free(U);
+	free(V);
+	free(q);
+	free(UT);
+	free(d);
+
+	return(rnk);
 }
 

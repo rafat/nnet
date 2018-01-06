@@ -9,7 +9,7 @@
 #include <time.h>
 #include <math.h>
 
-#include "optimc.h"
+#include "matrix.h"
 
 #ifdef __cplusplus
 extern "C" {

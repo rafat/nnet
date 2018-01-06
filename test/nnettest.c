@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "nnet.h"
+#include <stdlib.h>
+#include "../header/nnet.h"
 
 void irisout(double *out, int N, double *clamp) {
 	int i;
@@ -116,7 +117,7 @@ void mushroom() {
 
 	net = nnet_init(N, arch, actfcn);
 
-	set_trainfcn(net, "traingd");
+	set_trainfcn(net, "traingdm");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
 	set_trainmethod(net, "batch", patterns);
 	set_max_epoch(net, 1000);

@@ -11,8 +11,8 @@ nnet_object nnet_init(int layers, int *arch, int *actfcn) {
 		printf("Returning NULL Object\n");
 		return obj;
 	}
-	else if (layers > 102) {
-		printf("\nThis Neural Network cannot have more than 102 layers (Input+Output+ 100 Hidden Layers\n");
+	else if (layers > 5) {
+		printf("\nThis Neural Network cannot have more than 5 layers (Input+Output+ 100 Hidden Layers\n");
 		printf("Returning NULL Object\n");
 		return obj;
 	}
@@ -1949,7 +1949,7 @@ static void mapstd_stride_apply(double *x, int N, int stride, double ymean, doub
 	}
 }
 
-static void shuffle(int N, int *index) {
+void shuffle(int N, int *index) {
 	int i,j,temp;
 
 	for (i = 0; i < N; ++i) {
@@ -2323,6 +2323,7 @@ static void epoch_mbp(nnet_object obj, int tsize, double *data, double *target, 
 
 	obj->mse = gmse / (lenoup * tsize);
 }
+
 void train_null(nnet_object obj, int size, double *inp, double *out) {
 	int epoch,i;
 	int tsize, gsize, vsize;
@@ -2334,7 +2335,6 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 	double *tempi, *tempo;
 	int *index, *indexg,*indexv;
 	int gen, val;
-	double tstart, tend;
 
 	gen = val = 0;
 	obj->normmethod = 0;
@@ -2473,9 +2473,7 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 			omse = mse;
 			epoch = 1;
 			while (mse > obj->tmse && epoch < obj->emax) {
-				tstart = omp_get_wtime();
 				epoch_mbp(obj, tsize, data, target, index, delta, tdelta, output, tinp, tempi, tempo);
-				tend = omp_get_wtime();
 				mse = obj->mse;
 				if (gen == 1) {
 					gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
@@ -2486,7 +2484,7 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 					}
 				}
 				else {
-					printf("EPOCH %d MSE %g Time %.16g \n", epoch, mse, tend - tstart);
+					printf("EPOCH %d MSE %g \n", epoch, mse);
 				}
 
 				epoch++;

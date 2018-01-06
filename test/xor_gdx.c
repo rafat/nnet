@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../src/nnet.h"
+#include "../header/nnet.h"
 
 int main() {
 	int N, i, leninp, lenoup;

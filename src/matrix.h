@@ -8,7 +8,9 @@
 #ifndef MATRIX_H_
 #define MATRIX_H_
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -19,6 +21,7 @@
 #define CUTOFF 192
 #define TOL 1e-12
 #define BLOCKSIZE 64
+#define TBLOCK 64
 #define SVDMAXITER 50
 
 
@@ -63,6 +66,8 @@ void rtranspose(double *m, int rows, int cols,double *n, int r, int c);
 void ctranspose(double *sig, int rows, int cols,double *col);
 
 void mtranspose(double *sig, int rows, int cols,double *col);
+
+void itranspose(double *A, int M, int N);
 
 //int minverse(double *xxt, int p);
 
@@ -142,7 +147,11 @@ void svd_sort(double *U,int M,int N,double *V,double *q);
 
 int svd(double *A,int M,int N,double *U,double *V,double *q);
 
+int svd_transpose(double *A, int M, int N, double *U, double *V, double *q);
+
 int rank(double *A, int M,int N);
+
+int lls_svd_multi(double *A, double *b, int M, int N, double *x);// Ax =b where x is a matrix A - M * N, x - N * p , B - M * p
 
 #ifdef __cplusplus
 }
