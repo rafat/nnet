@@ -43,9 +43,10 @@ void building() {
 
 	net = nnet_init(N, arch, actfcn);
 
-	set_trainfcn(net, "traingdm");
+	set_trainfcn(net, "traingd");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
-	set_max_epoch(net, 1000);
+	set_trainmethod(net, "batch", patterns);
+	set_max_epoch(net, 3000);
 	set_target_mse(net, 1e-05);// Target MSE error
 	set_learning_rate(net, 0.01);// learning rate
 	//set_momentum(net, 0.9);// No momentum term
@@ -79,11 +80,12 @@ void gene() {
 
 	net = nnet_init(N, arch, actfcn);
 
-	set_trainfcn(net, "traingdx");
+	set_trainfcn(net, "traingda");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
+	set_trainmethod(net, "online", patterns);
 	set_max_epoch(net, 1000);
 	set_target_mse(net, 1e-05);// Target MSE error
-	set_learning_rate(net, 0.07);// learning rate
+	set_learning_rate(net, 0.01);// learning rate
 	//set_momentum(net, 0.9);// No momentum term
 	set_norm_method(net,1);
 	set_mnmx(net, 0, 1, 0, 1);
@@ -117,9 +119,9 @@ void mushroom() {
 
 	net = nnet_init(N, arch, actfcn);
 
-	set_trainfcn(net, "traingdm");
+	set_trainfcn(net, "trainqp");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
-	set_trainmethod(net, "batch", patterns);
+	//set_trainmethod(net, "batch", patterns);
 	set_max_epoch(net, 1000);
 	set_target_mse(net, 1e-05);// Target MSE error
 	set_learning_rate(net, 0.7);// learning rate
@@ -156,10 +158,10 @@ void robot() {
 
 	set_trainfcn(net, "traingd");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
-	set_trainmethod(net, "batch", patterns);
+	//set_trainmethod(net, "batch", patterns);
 	set_max_epoch(net, 3000);
 	set_target_mse(net, 1e-03);// Target MSE error
-	set_learning_rate(net, 0.1);// learning rate
+	set_learning_rate(net, 0.7);// learning rate
 	set_momentum(net, 0.4);// No momentum term
 
 	train(net, patterns, data->data, data->target);
@@ -191,7 +193,7 @@ void soybean() {
 
 	net = nnet_init(N, arch, actfcn);
 
-	set_trainfcn(net, "traingd");
+	set_trainfcn(net, "trainrp");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
 	set_max_epoch(net, 1000);
 	set_target_mse(net, 1e-05);// Target MSE error
@@ -363,14 +365,14 @@ void iris2() {
 }
 
 
-
 int main() {
 	//building();
 	//gene();
 	//soybean();
 	//thyroid();
-	//robot();
-	mushroom();
+	robot();
+	//mushroom();
+	//waveinit();
 	//iris();
 	return 0;
 }

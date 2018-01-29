@@ -6,6 +6,9 @@
 #endif
 #include "netdata.h"
 
+#define ETA_MAX 1.0
+#define ETA_MIN 1e-05
+
 #ifdef __cplusplus
 extern "C" {
 #endif
