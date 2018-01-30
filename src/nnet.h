@@ -155,6 +155,8 @@ void func_lm(double *x, int MP, int N, void *params);
 
 void sim(nnet_object obj, int size, double *data, double *output);
 
+double nnet_test(nnet_object obj, int tsize, double *data, double *target);
+
 void nnet_free(nnet_object obj);
 
 void lm_free(lm_object lm);

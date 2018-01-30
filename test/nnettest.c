@@ -134,17 +134,20 @@ void mushroom() {
 }
 
 void robot() {
-	ndata_object data;
+	ndata_object data,tdata;
 	nnet_object net;
-	int inp, oup, patterns;
+	int inp, oup, patterns,tsize;
 	int N;
 	int isheader = 1;
+	double tmse;
 	char* file = "datasets/robot.train";
+	char *tfile = "datasets/robot.test";
 	char *delimiter = " ";
 
 	inp = 48;
 	oup = 3;
 	patterns = 374;
+	tsize = 594;
 
 	data = ndata_init(inp, oup, patterns);
 	file_sep_line_enter(data, file, delimiter, isheader);
@@ -158,15 +161,23 @@ void robot() {
 
 	set_trainfcn(net, "traingd");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
-	//set_trainmethod(net, "batch", patterns);
+	set_trainmethod(net, "online", 1);
 	set_max_epoch(net, 3000);
-	set_target_mse(net, 1e-03);// Target MSE error
+	set_target_mse(net, 1e-04);// Target MSE error
 	set_learning_rate(net, 0.7);// learning rate
 	set_momentum(net, 0.4);// No momentum term
 
 	train(net, patterns, data->data, data->target);
 
+	tdata = ndata_init(inp, oup, tsize);
+	file_sep_line_enter(tdata, tfile, delimiter, isheader);
+
+	tmse = nnet_test(net, tsize, tdata->data, tdata->target);
+
+	printf("\n Test MSE %g \n", tmse);
+
 	ndata_free(data);
+	ndata_free(tdata);
 	nnet_free(net);
 }
 

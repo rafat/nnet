@@ -177,6 +177,8 @@ void train(nnet_object obj, int tsize, double *data, double *target);
 
 void sim(nnet_object obj, int size, double *data, double *output);
 
+double nnet_test(nnet_object obj, int tsize, double *data, double *target);
+
 void nnet_free(nnet_object obj);
 
 
