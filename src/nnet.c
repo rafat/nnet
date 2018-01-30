@@ -3415,36 +3415,6 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 	free(gradient2);
 }
 
-double nnet_test(nnet_object obj, int tsize, double *data, double *target) {
-	double gmse, temp;
-	int i, itrd, itrt, leninp, lenoup, j;
-	double *tempi, *tempo,*output;
-
-	leninp = obj->arch[0];
-	lenoup = obj->arch[obj->lm1];
-	gmse = 0.0;
-
-	tempi = (double*)malloc(sizeof(double)* obj->nmax);
-	tempo = (double*)malloc(sizeof(double)* obj->nmax);
-	output = (double*)malloc(sizeof(double)* obj->arch[obj->lm1]);
-
-	for (i = 0; i < tsize; ++i) {
-		itrd = i * leninp;
-		itrt = i * lenoup;
-		feedforward(obj, data+itrd, leninp, lenoup, output, tempi, tempo);
-		for (j = 0; j < lenoup; ++j) {
-			temp = target[itrt + j] - output[j];
-			gmse += (temp*temp);
-		}
-	}
-
-	gmse = gmse / (lenoup * tsize);
-	free(tempi);
-	free(tempo);
-	free(output);
-	return gmse;
-}
-
 void func_lm(double *x,int MP,int N,void *params) {
 	int M, P,i,j;
 	nnet_object obj = (nnet_object)params;
@@ -3599,6 +3569,31 @@ void sim(nnet_object obj, int size, double *data, double *output) {
 	free(tempo);
 	free(pn);
 	free(tn);
+}
+
+double nnet_test(nnet_object obj, int tsize, double *data, double *target) {
+	double gmse, temp;
+	int i, itrt, lenoup, j;
+	double  *output;
+
+	lenoup = obj->arch[obj->lm1];
+	gmse = 0.0;
+
+	output = (double*)malloc(sizeof(double)* obj->arch[obj->lm1] * tsize);
+
+	sim(obj, tsize, data, output);
+
+	for (i = 0; i < tsize; ++i) {
+		itrt = i * lenoup;
+		for (j = 0; j < lenoup; ++j) {
+			temp = target[itrt + j] - output[itrt+j];
+			gmse += (temp*temp);
+		}
+	}
+
+	gmse = gmse / (lenoup * tsize);
+	free(output);
+	return gmse;
 }
 
 void nnet_free(nnet_object obj) {
