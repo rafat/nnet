@@ -44,8 +44,8 @@ void building() {
 	net = nnet_init(N, arch, actfcn);
 
 	set_trainfcn(net, "traingd");
-	set_training_ratios(net, 1.0, 0.0, 0.0);
-	set_trainmethod(net, "batch", patterns);
+	set_training_ratios(net, 0.8, 0.1, 0.1);
+	set_trainmethod(net, "batch", 5);
 	set_max_epoch(net, 3000);
 	set_target_mse(net, 1e-05);// Target MSE error
 	set_learning_rate(net, 0.01);// learning rate
@@ -163,11 +163,11 @@ void mushroom() {
 
 	set_trainfcn(net, "trainqp");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
-	set_trainmethod(net, "batch", patterns);
+	//set_trainmethod(net, "batch", patterns);
 	set_max_epoch(net, 1000);
 	set_target_mse(net, 1e-05);// Target MSE error
 	set_learning_rate(net, 0.7);// learning rate
-	set_momentum(net, 0.95);// No momentum term
+	//set_momentum(net, 0.95);// No momentum term
 
 	train(net, patterns, data->data, data->target);
 
@@ -246,14 +246,14 @@ void soybean() {
 
 	net = nnet_init(N, arch, actfcn);
 
-	set_trainfcn(net, "trainrp");
+	set_trainfcn(net, "traingdm");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
 	set_max_epoch(net, 1000);
 	set_target_mse(net, 1e-05);// Target MSE error
 	set_learning_rate(net, 0.07);// learning rate
 	set_momentum(net, 0.9);// No momentum term
 	set_norm_method(net, 0);
-	set_mnmx(net, 0, 1, 0, 1);
+	//set_mnmx(net, 0, 1, 0, 1);
 
 	train(net, patterns, data->data, data->target);
 
@@ -285,7 +285,7 @@ void thyroid() {
 	net = nnet_init(N, arch, actfcn);
 
 	set_trainfcn(net, "traingda");
-	set_training_ratios(net, 1.0, 0.0, 0.0);
+	set_training_ratios(net, 0.8, 0.1, 0.1);
 	set_max_epoch(net, 1000);
 	set_target_mse(net, 1e-05);// Target MSE error
 	set_learning_rate(net, 0.07);// learning rate
@@ -420,12 +420,12 @@ void iris2() {
 
 int main() {
 	//building();
-	gene();
-	gene_test();
+	//gene();
+	//gene_test();
 	//soybean();
 	//thyroid();
 	//robot();
-	//mushroom();
+	mushroom();
 	//waveinit();
 	//iris();
 	return 0;

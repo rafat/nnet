@@ -69,6 +69,7 @@ nnet_object nnet_init(int layers, int *arch, int *actfcn) {
 
 
 	obj->emax = 1000; // Maximum Epoch
+	obj->verbose = 10; // Display update every "verbose" iteration. Set it to 0 to suppress any outputs.
 
 	obj->generalize = 0;// Generalize and Validation initialized to 0.
 	obj->validate = 0; //  They will automatically change to 1 if a generalization and/or
@@ -196,6 +197,10 @@ void set_max_epoch(nnet_object obj, int max_epoch) {
 	else {
 		obj->emax = max_epoch;
 	}
+}
+
+void set_verbose(nnet_object obj, int verb) {
+	obj->verbose = verb;
 }
 
 void set_training_ratios(nnet_object obj, double tratio, double gratio, double vratio) {
@@ -2754,7 +2759,7 @@ static void epoch_gd(nnet_object obj, int tsize, double *data, double *target, i
 
 void train_null(nnet_object obj, int size, double *inp, double *out) {
 	int epoch,i;
-	int tsize, gsize, vsize;
+	int tsize, gsize, vsize,vitr;
 	int itrd,itrt,leninp,lenoup;
 	double mse,gmse,vmse,omse,mcval;
 	double mpe, lr_inc, lr_dec,eta_tmp;
@@ -2865,7 +2870,7 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 	for (i = 0; i < obj->lw; ++i) {
 		tweight[i] = obj->weight[i];
 	}
-
+	vitr = 0;
 	if (!strcmp(obj->trainfcn, "traingd") || !strcmp(obj->trainfcn, "traingdm")) {
 		if (!strcmp(obj->trainmethod, "online")) {
 			tdelta = (double*)malloc(sizeof(double)*obj->lw);
@@ -2880,16 +2885,23 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 			while (mse > obj->tmse && epoch < obj->emax) {
 				epoch_gd(obj, tsize, data, target, index, delta,tdelta, output, tinp, tempi, tempo);
 				mse = obj->mse;
+				vitr++;
 				if (gen == 1) {
 					gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
-					printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+						vitr = 0;
+					}
 					if (gmse <= obj->gmse) {
 						printf("Convergence based on Generalization MSE dropping under %g \n", obj->gmse);
 						break;
 					}
 				}
 				else {
-					printf("EPOCH %d MSE %g \n", epoch, mse);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g \n", epoch, mse);
+						vitr = 0;
+					}
 				}
 
 				epoch++;
@@ -2907,16 +2919,23 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 			while (mse > obj->tmse && epoch < obj->emax) {
 				epoch_mbp(obj, tsize, data, target, index, delta, tdelta, output, tinp, tempi, tempo);
 				mse = obj->mse;
+				vitr++;
 				if (gen == 1) {
 					gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
-					printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+						vitr = 0;
+					}
 					if (gmse <= obj->gmse) {
 						printf("Convergence based on Generalization MSE dropping under %g \n", obj->gmse);
 						break;
 					}
 				}
 				else {
-					printf("EPOCH %d MSE %g \n", epoch, mse);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g \n", epoch, mse);
+						vitr = 0;
+					}
 				}
 
 				epoch++;
@@ -2944,6 +2963,7 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 					tweight[i] = obj->weight[i];
 				}
 				mse = obj->mse;
+				vitr++;
 				if (mse > mpe*omse) {
 					eta_tmp = obj->eta * lr_dec;
 					obj->eta = pmax(eta_tmp,(double)ETA_MIN);
@@ -2962,14 +2982,20 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 
 				if (gen == 1) {
 					gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
-					printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+						vitr = 0;
+					}
 					if (gmse <= obj->gmse) {
 						printf("Convergence based on Generalization MSE dropping under %g \n", obj->gmse);
 						break;
 					}
 				}
 				else {
-					printf("EPOCH %d MSE %g omse %g eta %g \n", epoch, mse, omse, obj->eta);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g \n", epoch, mse);
+						vitr = 0;
+					}
 				}
 
 				epoch++;
@@ -2994,6 +3020,7 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 					tweight[i] = obj->weight[i];
 				}
 				mse = obj->mse;
+				vitr++;
 				if (mse > mpe*omse) {
 					eta_tmp = obj->eta * lr_dec;
 					obj->eta = pmax(eta_tmp, (double)ETA_MIN);
@@ -3012,14 +3039,20 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 
 				if (gen == 1) {
 					gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
-					printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+						vitr = 0;
+					}
 					if (gmse <= obj->gmse) {
 						printf("Convergence based on Generalization MSE dropping under %g \n", obj->gmse);
 						break;
 					}
 				}
 				else {
-					printf("EPOCH %d MSE %g omse %g eta %g \n", epoch, mse, omse, obj->eta);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g \n", epoch, mse);
+						vitr = 0;
+					}
 				}
 
 				epoch++;
@@ -3046,6 +3079,7 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 					tweight[i] = obj->weight[i];
 				}
 				mse = obj->mse;
+				vitr++;
 				if (mse > mpe*omse) {
 					eta_tmp = obj->eta * lr_dec;
 					obj->eta = pmax(eta_tmp, (double)ETA_MIN);
@@ -3066,14 +3100,20 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 
 				if (gen == 1) {
 					gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
-					printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+						vitr = 0;
+					}
 					if (gmse <= obj->gmse) {
 						printf("Convergence based on Generalization MSE dropping under %g \n", obj->gmse);
 						break;
 					}
 				}
 				else {
-					printf("EPOCH %d MSE %g omse %g lr %g mc %g \n", epoch, mse, omse, obj->eta, obj->alpha);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g \n", epoch, mse);
+						vitr = 0;
+					}
 				}
 
 				epoch++;
@@ -3097,6 +3137,7 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 					tweight[i] = obj->weight[i];
 				}
 				mse = obj->mse;
+				vitr++;
 				if (mse > mpe*omse) {
 					eta_tmp = obj->eta * lr_dec;
 					obj->eta = pmax(eta_tmp, (double)ETA_MIN);
@@ -3117,14 +3158,20 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 
 				if (gen == 1) {
 					gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
-					printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+						vitr = 0;
+					}
 					if (gmse <= obj->gmse) {
 						printf("Convergence based on Generalization MSE dropping under %g \n", obj->gmse);
 						break;
 					}
 				}
 				else {
-					printf("EPOCH %d MSE %g omse %g lr %g mc %g \n", epoch, mse, omse, obj->eta, obj->alpha);
+					if (vitr == obj->verbose) {
+						printf("EPOCH %d MSE %g \n", epoch, mse);
+						vitr = 0;
+					}
 				}
 
 				epoch++;
@@ -3141,16 +3188,23 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 		while (mse > obj->tmse && epoch < obj->emax) {
 			epoch_qp(obj, tsize, data, target, index, delta, slope, tslope, output, tinp, tempi, tempo,gradient2);
 			mse = obj->mse;
+			vitr++;
 			if (gen == 1) {
 				gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
-				printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+				if (vitr == obj->verbose) {
+					printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+					vitr = 0;
+				}
 				if (gmse <= obj->gmse) {
 					printf("Convergence based on Generalization MSE dropping under %g \n", obj->gmse);
 					break;
 				}
 			}
 			else {
-				printf("EPOCH %d MSE %g \n", epoch, mse);
+				if (vitr == obj->verbose) {
+					printf("EPOCH %d MSE %g \n", epoch, mse);
+					vitr = 0;
+				}
 			}
 
 			epoch++;
@@ -3168,16 +3222,23 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 		while (mse > obj->tmse && epoch < obj->emax) {
 			epoch_rp(obj, tsize, data, target, index, delta, slope, tslope, output, tinp, tempi, tempo,tdelta);
 			mse = obj->mse;
+			vitr++;
 			if (gen == 1) {
 				gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
-				printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+				if (vitr == obj->verbose) {
+					printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+					vitr = 0;
+				}
 				if (gmse <= obj->gmse) {
 					printf("Convergence based on Generalization MSE dropping under %g \n", obj->gmse);
 					break;
 				}
 			}
 			else {
-				printf("EPOCH %d MSE %g \n", epoch, mse);
+				if (vitr == obj->verbose) {
+					printf("EPOCH %d MSE %g \n", epoch, mse);
+					vitr = 0;
+				}
 			}
 
 			epoch++;
@@ -3197,16 +3258,23 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 		while (mse > obj->tmse && epoch < obj->emax) {
 			epoch_irp(obj, tsize, data, target, index, delta, slope, tslope, output, tinp, tempi, tempo, tdelta);
 			mse = obj->imse = obj->mse;
+			vitr++;
 			if (gen == 1) {
 				gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
-				printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+				if (vitr == obj->verbose) {
+					printf("EPOCH %d MSE %g GMSE %g \n", epoch, mse, gmse);
+					vitr = 0;
+				}
 				if (gmse <= obj->gmse) {
 					printf("Convergence based on Generalization MSE dropping under %g \n", obj->gmse);
 					break;
 				}
 			}
 			else {
-				printf("EPOCH %d MSE %g \n", epoch, mse);
+				if (vitr == obj->verbose) {
+					printf("EPOCH %d MSE %g \n", epoch, mse);
+					vitr = 0;
+				}
 			}
 
 			epoch++;
@@ -3217,6 +3285,9 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 	// Check for failure
 	if (obj->mse != obj->mse) {
 		printf("\n Failure. Re-try with different parameter values.  \n");
+	}
+	else {
+		printf("EPOCH %d MSE %g \n", epoch-1, obj->mse);
 	}
 	// Validate
 

@@ -28,7 +28,7 @@ struct nnet_set {
 	int arch[5];
 	int lweight[5];
 	int actfcn[5];// 0 - NULL, 1 - purelin, 2 - logsig, 3 - tansig. By default set first element to 0 as input layer doesn't have any activation function
-	int normmethod;// 0 - NULL, 1 - Minmax {-1,1}, 2 - Std (Mean = 0, Variance = 1}. Default = 1 (Minmax) 
+	int normmethod;// 0 - NULL, 1 - Minmax {-1,1}, 2 - Std (Mean = 0, Variance = 1}. Default = 0
 	char trainfcn[50];
 	char trainmethod[20];// Options "online" or "batch"
 	double *weight;// Weights vector including biases
@@ -51,6 +51,7 @@ struct nnet_set {
 	int emax;
 	int generalize;
 	int validate;
+	int verbose;
 	int batchsize;// batchsize . Used only if the batch method selected.
 	double qp_threshold;
 	double qp_shrink_factor;
@@ -95,6 +96,8 @@ void set_target_mse(nnet_object obj, double mse);
 void set_generalization_mse(nnet_object obj, double gmse);
 
 void set_max_epoch(nnet_object obj, int max_epoch);
+
+void set_verbose(nnet_object obj, int verb);
 
 void set_training_ratios(nnet_object obj, double tratio, double gratio, double vratio);
 
