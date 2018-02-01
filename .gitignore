@@ -29,3 +29,6 @@ language.settings.xml
 
 #tcl
 *.tcl
+
+#nnet
+*.nnet

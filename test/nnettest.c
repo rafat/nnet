@@ -58,17 +58,20 @@ void building() {
 }
 
 void gene() {
-	ndata_object data;
+	ndata_object data,tdata;
 	nnet_object net;
 	int inp, oup, patterns;
-	int N;
+	int N,tsize;
 	int isheader = 1;
 	char* file = "datasets/gene.train";
+	char* tfile = "datasets/gene.test";
 	char *delimiter = " ";
+	double tmse;
 
 	inp = 120;
 	oup = 3;
 	patterns = 1588;
+	tsize = 1587;
 
 	data = ndata_init(inp, oup, patterns);
 	file_sep_line_enter(data, file, delimiter, isheader);
@@ -83,7 +86,7 @@ void gene() {
 	set_trainfcn(net, "traingda");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
 	set_trainmethod(net, "online", patterns);
-	set_max_epoch(net, 1000);
+	set_max_epoch(net, 500);
 	set_target_mse(net, 1e-05);// Target MSE error
 	set_learning_rate(net, 0.01);// learning rate
 	//set_momentum(net, 0.9);// No momentum term
@@ -92,7 +95,46 @@ void gene() {
 
 	train(net, patterns, data->data, data->target);
 
+	tdata = ndata_init(inp, oup, tsize);
+	file_sep_line_enter(tdata, tfile, delimiter, isheader);
+
+	tmse = nnet_test(net, tsize, tdata->data, tdata->target);
+
+	printf("\n Test MSE %g \n", tmse);
+
+	nnet_save(net, "gene.nnet");
+
 	ndata_free(data);
+	ndata_free(tdata);
+	nnet_free(net);
+}
+
+void gene_test() {
+	ndata_object tdata;
+	nnet_object net;
+	int inp, oup;
+	int N, tsize;
+	int isheader = 1;
+	char* tfile = "datasets/gene.test";
+	char *delimiter = " ";
+	double tmse;
+
+	inp = 120;
+	oup = 3;
+	tsize = 1587;
+
+	net = nnet_load("gene.nnet");
+
+	nnet_save(net, "gene2.nnet");
+
+	tdata = ndata_init(inp, oup, tsize);
+	file_sep_line_enter(tdata, tfile, delimiter, isheader);
+
+	tmse = nnet_test(net, tsize, tdata->data, tdata->target);
+
+	printf("\n Test MSE %g \n", tmse);
+
+	ndata_free(tdata);
 	nnet_free(net);
 }
 
@@ -121,7 +163,7 @@ void mushroom() {
 
 	set_trainfcn(net, "trainqp");
 	set_training_ratios(net, 1.0, 0.0, 0.0);
-	//set_trainmethod(net, "batch", patterns);
+	set_trainmethod(net, "batch", patterns);
 	set_max_epoch(net, 1000);
 	set_target_mse(net, 1e-05);// Target MSE error
 	set_learning_rate(net, 0.7);// learning rate
@@ -378,10 +420,11 @@ void iris2() {
 
 int main() {
 	//building();
-	//gene();
+	gene();
+	gene_test();
 	//soybean();
 	//thyroid();
-	robot();
+	//robot();
 	//mushroom();
 	//waveinit();
 	//iris();

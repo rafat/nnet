@@ -179,6 +179,10 @@ void sim(nnet_object obj, int size, double *data, double *output);
 
 double nnet_test(nnet_object obj, int tsize, double *data, double *target);
 
+void nnet_save(nnet_object obj, const char *fileName);
+
+nnet_object nnet_load(const char *fileName);
+
 void nnet_free(nnet_object obj);
 
 

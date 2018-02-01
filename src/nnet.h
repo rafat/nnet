@@ -86,15 +86,6 @@ struct nnet_set {
 	double params[1];
 };
 
-typedef struct lm_set* lm_object;
-
-lm_object lm_init(nnet_object nnet, ndata_object ndata);
-
-struct lm_set {
-	nnet_object net;
-	ndata_object data;
-};
-
 void set_learning_rate(nnet_object obj, double eta);
 
 void set_momentum(nnet_object obj, double alpha);
@@ -151,15 +142,16 @@ void train_mstd(nnet_object obj, int size, double *inp, double *out);
 
 void train(nnet_object obj, int tsize, double *data, double *target);
 
-void func_lm(double *x, int MP, int N, void *params);
-
 void sim(nnet_object obj, int size, double *data, double *output);
 
 double nnet_test(nnet_object obj, int tsize, double *data, double *target);
 
+void nnet_save(nnet_object obj, const char *fileName);
+
+nnet_object nnet_load(const char *fileName);
+
 void nnet_free(nnet_object obj);
 
-void lm_free(lm_object lm);
 
 #ifdef __cplusplus
 }
