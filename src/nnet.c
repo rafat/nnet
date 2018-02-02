@@ -586,7 +586,6 @@ void backpropagate(nnet_object obj, double *output, double *desired, int lenoup,
 			//printf("Wcv %g ", output[i]);
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp;
-			obj->mse += temp*temp;
 			//printf("%g %g \n", desired[i], output[i]);
 	
 		}
@@ -595,7 +594,6 @@ void backpropagate(nnet_object obj, double *output, double *desired, int lenoup,
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * obj->tout[itr + i] * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 			//printf("%g %g \n", desired[i], output[i]);
 		}
 	}
@@ -603,7 +601,6 @@ void backpropagate(nnet_object obj, double *output, double *desired, int lenoup,
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * (1.0 + obj->tout[itr + i]) * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 		}
 	}
 	//printf("Wcv %g ", obj->mse);
@@ -766,21 +763,18 @@ static void backpropagate_gd(nnet_object obj, double *output, double *desired, i
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp;
-			obj->mse += temp*temp;
 		}
 	}
 	else if (obj->actfcn[lm1] == 2) {
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * obj->tout[itr + i] * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 		}
 	}
 	else if (obj->actfcn[lm1] == 3) {
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * (1.0 + obj->tout[itr + i]) * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 		}
 	}
 
@@ -964,7 +958,6 @@ static void backpropagate_alr(nnet_object obj, double *output, double *desired, 
 			//printf("Wcv %g ", output[i]);
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp;
-			obj->mse += temp*temp;
 			//printf("%g %g \n", desired[i], output[i]);
 
 		}
@@ -973,7 +966,6 @@ static void backpropagate_alr(nnet_object obj, double *output, double *desired, 
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * obj->tout[itr + i] * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 			//printf("%g %g \n", desired[i], output[i]);
 		}
 	}
@@ -981,7 +973,6 @@ static void backpropagate_alr(nnet_object obj, double *output, double *desired, 
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * (1.0 + obj->tout[itr + i]) * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 		}
 	}
 
@@ -1144,7 +1135,6 @@ static void backpropagate_mb_1(nnet_object obj, double *output, double *desired,
 			//printf("Wcv %g ", output[i]);
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp;
-			obj->mse += temp*temp;
 			//printf("%g %g \n", desired[i], output[i]);
 
 		}
@@ -1153,7 +1143,6 @@ static void backpropagate_mb_1(nnet_object obj, double *output, double *desired,
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * obj->tout[itr + i] * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 			//printf("%g %g \n", desired[i], output[i]);
 		}
 	}
@@ -1161,7 +1150,6 @@ static void backpropagate_mb_1(nnet_object obj, double *output, double *desired,
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * (1.0 + obj->tout[itr + i]) * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 		}
 	}
 
@@ -1298,21 +1286,18 @@ static void backpropagate_mb(nnet_object obj, double *output, double *desired, i
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp;
-			obj->mse += temp*temp;
 		}
 	}
 	else if (obj->actfcn[lm1] == 2) {
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * obj->tout[itr + i] * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 		}
 	}
 	else if (obj->actfcn[lm1] == 3) {
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * (1.0 + obj->tout[itr + i]) * (1.0 - obj->tout[itr + i]);
-			obj->mse += temp*temp;
 		}
 	}
 
@@ -1577,7 +1562,6 @@ void backpropagate_qp_1(nnet_object obj, double *output, double *desired, int le
 			//printf("Wcv %g ", output[i]);
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp;
-			obj->mse += (temp*temp);
 			//printf("%g %g \n", desired[i], output[i]);
 
 		}
@@ -1586,7 +1570,6 @@ void backpropagate_qp_1(nnet_object obj, double *output, double *desired, int le
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * logsig_der(obj->tout[itr + i]);
-			obj->mse += (temp*temp);
 			//printf("%g %g \n", desired[i], output[i]);
 		}
 	}
@@ -1594,7 +1577,6 @@ void backpropagate_qp_1(nnet_object obj, double *output, double *desired, int le
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * tansig_der(obj->tout[itr + i]);
-			obj->mse += (temp*temp);
 		}
 	}
 
@@ -1785,7 +1767,6 @@ void backpropagate_rp_1(nnet_object obj, double *output, double *desired, int le
 			//printf("Wcv %g ", output[i]);
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp;
-			obj->mse += (temp*temp);
 			//printf("%g %g \n", desired[i], output[i]);
 
 		}
@@ -1794,7 +1775,6 @@ void backpropagate_rp_1(nnet_object obj, double *output, double *desired, int le
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * logsig_der(obj->tout[itr + i]);
-			obj->mse += (temp*temp);
 			//printf("%g %g \n", desired[i], output[i]);
 		}
 	}
@@ -1802,7 +1782,6 @@ void backpropagate_rp_1(nnet_object obj, double *output, double *desired, int le
 		for (i = 0; i < loup; ++i) {
 			temp = (desired[i] - output[i]);
 			obj->gradient[itr + i] = temp * tansig_der(obj->tout[itr + i]);
-			obj->mse += (temp*temp);
 		}
 	}
 
@@ -2064,106 +2043,6 @@ void backpropagate_rqp_1(nnet_object obj, double *output, double *desired, int l
 		}
 		itr -= (S - 1);
 	}
-
-	/*
-	for (i = lm1 - 1; i > 0; --i) {
-		if (obj->actfcn[i] == 1) {
-			N = obj->arch[i];
-			jinit = itr - N;
-			kfin = obj->arch[i + 1];
-			lw = lw - obj->lweight[i + 1];
-			itr2 = 1;
-			for (j = jinit; j < itr; ++j) {
-				temp = 0.0;
-				for (k = 0; k < kfin; ++k) {
-					temp += obj->gradient[itr + k] * obj->weight[lw + itr2];// add weights
-					//printf("W %d ", lw + itr2);
-					itr2 += (N + 1);
-				}
-				itr2 = j - jinit + 2;
-				obj->gradient[j] = temp;
-			}
-			itr -= N;
-		}
-		else if (obj->actfcn[i] == 2) {
-			N = obj->arch[i];
-			jinit = itr - N;
-			//logsig(obj->tout + jinit, N, beta + jinit);
-			kfin = obj->arch[i + 1];
-			lw = lw - obj->lweight[i + 1];
-			itr2 = 1;
-			for (j = jinit; j < itr; ++j) {
-				temp = 0.0;
-				for (k = 0; k < kfin; ++k) {
-					temp += obj->gradient[itr + k] * obj->weight[lw + itr2];// add weights
-					//printf("W %d ", lw + itr2);
-					itr2 += (N + 1);
-				}
-				itr2 = j - jinit + 2;
-				obj->gradient[j] = temp * logsig_der(obj->tout[j]);;
-				//printf("temp %g %g ", temp, obj->tout[j]);
-			}
-			itr -= N;
-		}
-		else if (obj->actfcn[i] == 3) {
-			N = obj->arch[i];
-			jinit = itr - N;
-			//logsig(obj->tout + jinit, N, beta + jinit);
-			kfin = obj->arch[i + 1];
-			lw = lw - obj->lweight[i + 1];
-			itr2 = 1;
-			for (j = jinit; j < itr; ++j) {
-				temp = 0.0;
-				for (k = 0; k < kfin; ++k) {
-					temp += obj->gradient[itr + k] * obj->weight[lw + itr2];// add weights
-					//printf("W %d ", lw + itr2);
-					itr2 += (N + 1);
-				}
-				itr2 = j - jinit + 2;
-				obj->gradient[j] = temp * tansig_der(obj->tout[j]);
-			}
-			itr -= N;
-		}
-	}
-
-
-	// Calculate weights and deltas
-
-	lw = obj->lw;
-	in0 = obj->arch[0];
-
-	for (i = 0; i < in0; ++i) {
-		tinp[i] = obj->input[i];
-	}
-
-	for (i = in0; i < in0 + ld; ++i) {
-		tinp[i] = obj->tout[i - in0];
-	}
-
-	itr3 = itr = 0;
-	itr2 = itr4 = 0;
-
-	for (i = 0; i < lm1; ++i) {
-		N = obj->arch[i] + 1;
-		S = obj->arch[i + 1];
-		for (j = 0; j < S; ++j) {
-			itr = j * N;// iterates over one row of weights
-			index = itr3 + itr;
-			slope[index] += obj->gradient[itr2 + j];
-
-			for (k = 1; k < N; ++k) {
-				index = itr3 + itr + k;
-				slope[index] += tinp[itr4 + k - 1] * obj->gradient[itr2 + j];
-
-			}
-
-		}
-		itr3 += S * N;// iterates over all the weights going into a layer
-		itr2 += S;// iterates over each output layer
-		itr4 += (N - 1);// iterates over each input layer
-		//printf("\n itr %d itr2 %d itr3 %d \n", itr, itr2, itr3);
-	}
-	*/
 
 }
 void mapminmax(double *x, int N, double ymin, double ymax, double *y) {
@@ -2427,7 +2306,6 @@ static void epoch_gdm_alr2(nnet_object obj, int tsize, double *data, double *tar
 	leninp = obj->arch[0];
 	lenoup = obj->arch[obj->lm1];
 	mse = 0.0;
-	obj->mse = 0.0;
 	shuffle(tsize, index);
 
 
@@ -2440,8 +2318,19 @@ static void epoch_gdm_alr2(nnet_object obj, int tsize, double *data, double *tar
 
 	}
 
-	obj->mse /= (lenoup * tsize);
+	gmse = 0.0;
 
+	for (i = 0; i < tsize; ++i) {
+		itrd = i * leninp;
+		itrt = i * lenoup;
+		feedforward(obj, data + itrd, leninp, lenoup, output, tempi, tempo);
+		for (j = 0; j < lenoup; ++j) {
+			temp = target[itrt + j] - output[j];
+			gmse += (temp*temp);
+		}
+	}
+
+	obj->mse = gmse / (lenoup * tsize);
 }
 
 static void epoch_gdm(nnet_object obj, int tsize, double *data, double *target,int *index,double *delta,double *output,double *tinp,double *tempi,double *tempo) {
@@ -2454,7 +2343,6 @@ static void epoch_gdm(nnet_object obj, int tsize, double *data, double *target,i
 	leninp = obj->arch[0];
 	lenoup = obj->arch[obj->lm1];
 	mse = 0.0;
-	obj->mse = 0.0;
 	shuffle(tsize, index);
 
 	for (i = 0; i < tsize; ++i) {
@@ -2465,7 +2353,19 @@ static void epoch_gdm(nnet_object obj, int tsize, double *data, double *target,i
 	}
 
 	//printf("GMSE %g \n", obj->mse);
-	obj->mse /= (lenoup * tsize);
+	gmse = 0.0;
+
+	for (i = 0; i < tsize; ++i) {
+		itrd = i * leninp;
+		itrt = i * lenoup;
+		feedforward(obj, data + itrd, leninp, lenoup, output, tempi, tempo);
+		for (j = 0; j < lenoup; ++j) {
+			temp = target[itrt + j] - output[j];
+			gmse += (temp*temp);
+		}
+	}
+
+	obj->mse = gmse / (lenoup * tsize);
 }
 
 static void epoch_qp(nnet_object obj, int tsize, double *data, double *target, int *index, double *delta, double *slope, double *tslope,double *output,double *tinp,double *tempi,double *tempo,
@@ -2479,7 +2379,6 @@ static void epoch_qp(nnet_object obj, int tsize, double *data, double *target, i
 	leninp = obj->arch[0];
 	lenoup = obj->arch[obj->lm1];
 	mse = 0.0;
-	obj->mse = 0.0;
 
 	shuffle(tsize, index);
 
@@ -2492,10 +2391,22 @@ static void epoch_qp(nnet_object obj, int tsize, double *data, double *target, i
 		backpropagate_mb(obj, output, target + itrt, lenoup, delta, slope, tinp);
 	}
 	//printf("\n");
-	gmse = 0.0;
-	obj->mse /= (lenoup * tsize);
 
 	backpropagate_qp_2(obj, delta, slope, tslope);
+
+	gmse = 0.0;
+
+	for (i = 0; i < tsize; ++i) {
+		itrd = i * leninp;
+		itrt = i * lenoup;
+		feedforward(obj, data + itrd, leninp, lenoup, output, tempi, tempo);
+		for (j = 0; j < lenoup; ++j) {
+			temp = target[itrt + j] - output[j];
+			gmse += (temp*temp);
+		}
+	}
+
+	obj->mse = gmse / (lenoup * tsize);
 
 }
 
@@ -2509,7 +2420,6 @@ static void epoch_rp(nnet_object obj, int tsize, double *data, double *target, i
 	leninp = obj->arch[0];
 	lenoup = obj->arch[obj->lm1];
 	mse = 0.0;
-	obj->mse = 0.0;
 
 	shuffle(tsize, index);
 
@@ -2521,11 +2431,22 @@ static void epoch_rp(nnet_object obj, int tsize, double *data, double *target, i
 		//backpropagate_mb(obj, output, target + itrt, lenoup, delta, slope, tinp);
 	}
 	//printf("\n");
-	
-	gmse = 0.0;
-	obj->mse /= (lenoup * tsize);
 
 	backpropagate_rp_2(obj, delta, slope, tslope,updatevalue);
+
+	gmse = 0.0;
+
+	for (i = 0; i < tsize; ++i) {
+		itrd = i * leninp;
+		itrt = i * lenoup;
+		feedforward(obj, data + itrd, leninp, lenoup, output, tempi, tempo);
+		for (j = 0; j < lenoup; ++j) {
+			temp = target[itrt + j] - output[j];
+			gmse += (temp*temp);
+		}
+	}
+
+	obj->mse = gmse / (lenoup * tsize);
 
 }
 
@@ -2539,9 +2460,7 @@ static void epoch_irp(nnet_object obj, int tsize, double *data, double *target, 
 	leninp = obj->arch[0];
 	lenoup = obj->arch[obj->lm1];
 	mse = 0.0;
-	//obj->imse = obj->mse;
-	obj->mse = 0.0;
-
+	
 	shuffle(tsize, index);
 
 	for (i = 0; i < tsize; ++i) {
@@ -2553,10 +2472,23 @@ static void epoch_irp(nnet_object obj, int tsize, double *data, double *target, 
 	}
 	//printf("\n");
 
-	gmse = 0.0;
-	obj->mse /= (lenoup * tsize);
-
 	backpropagate_irp_2(obj, delta, slope, tslope, updatevalue);
+
+	gmse = 0.0;
+
+	for (i = 0; i < tsize; ++i) {
+		itrd = i * leninp;
+		itrt = i * lenoup;
+		feedforward(obj, data + itrd, leninp, lenoup, output, tempi, tempo);
+		for (j = 0; j < lenoup; ++j) {
+			temp = target[itrt + j] - output[j];
+			gmse += (temp*temp);
+		}
+	}
+
+	obj->imse = obj->mse;
+
+	obj->mse = gmse / (lenoup * tsize);
 
 }
 
@@ -2575,20 +2507,19 @@ static void epoch_mb(nnet_object obj, int tsize, double *data, double *target, i
 	mse = 0.0;
 	mbsize = 0;
 
-	obj->mse = 0.0;
-
 	shuffle(tsize, index);
 
 	for (i = 0; i < tsize; ++i) {
 		itrd = index[i] * leninp;
 		itrt = index[i] * lenoup;
 		feedforward(obj, data + itrd, leninp, lenoup, output, tempi, tempo);
-		backpropagate_mb_1(obj, output, target + itrt, lenoup, delta,tdelta,tinp);
+		backpropagate_mb(obj, output, target + itrt, lenoup, delta,tdelta,tinp);
 		mbsize++;
-		if (mbsize == batchsize || (i == tsize-1 && mbsize >= 1) || mbsize == tsize-1) {
+		if (mbsize == batchsize || i == tsize-1) {
 			for (j = 0; j < obj->lw; ++j) {
 				tdelta[j] /= mbsize;
 			}
+			//printf("%d \n", mbsize);
 			backpropagate_mb_2(obj, delta, tdelta);
 			for (j = 0; j < obj->lw; ++j) {
 				tdelta[j] = 0.0;
@@ -2596,7 +2527,19 @@ static void epoch_mb(nnet_object obj, int tsize, double *data, double *target, i
 			mbsize = 0;
 		}
 	}
-	obj->mse /= (lenoup * tsize);
+	gmse = 0.0;
+
+	for (i = 0; i < tsize; ++i) {
+		itrd = i * leninp;
+		itrt = i * lenoup;
+		feedforward(obj, data + itrd, leninp, lenoup, output, tempi, tempo);
+		for (j = 0; j < lenoup; ++j) {
+			temp = target[itrt + j] - output[j];
+			gmse += (temp*temp);
+		}
+	}
+
+	obj->mse = gmse / (lenoup * tsize);
 }
 
 static void epoch_mbp(nnet_object obj, int tsize, double *data, double *target, int *index, double *delta, double *tdelta, double *output,double *tinp,double *tempi, double *tempo) {
@@ -2743,7 +2686,6 @@ static void epoch_gd(nnet_object obj, int tsize, double *data, double *target, i
 	leninp = obj->arch[0];
 	lenoup = obj->arch[obj->lm1];
 	mse = 0.0;
-	obj->mse = 0.0;
 	shuffle(tsize, index);
 
 	for (i = 0; i < tsize; ++i) {
@@ -2753,8 +2695,19 @@ static void epoch_gd(nnet_object obj, int tsize, double *data, double *target, i
 		backpropagate_gd(obj, output, target + itrt, lenoup, delta,tdelta, tinp);
 	}
 
-	//printf("GMSE %g \n", obj->mse);
-	obj->mse /= (lenoup * tsize);
+	gmse = 0.0;
+
+	for (i = 0; i < tsize; ++i) {
+		itrd = index[i] * leninp;
+		itrt = index[i] * lenoup;
+		feedforward(obj, data + itrd, leninp, lenoup, output, tempi, tempo);
+		for (j = 0; j < lenoup; ++j) {
+			temp = target[itrt + j] - output[j];
+			gmse += (temp*temp);
+		}
+	}
+
+	obj->mse = gmse / (lenoup * tsize);
 }
 
 void train_null(nnet_object obj, int size, double *inp, double *out) {
@@ -2912,12 +2865,12 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 			for (i = 0; i < obj->lw; ++i) {
 				tdelta[i] = 0.0;
 			}
-			epoch_mbp(obj, tsize, data, target, index, delta, tdelta, output, tinp, tempi, tempo);
+			epoch_mb(obj, tsize, data, target, index, delta, tdelta, output, tinp, tempi, tempo);
 			mse = obj->mse;
 			omse = mse;
 			epoch = 1;
 			while (mse > obj->tmse && epoch < obj->emax) {
-				epoch_mbp(obj, tsize, data, target, index, delta, tdelta, output, tinp, tempi, tempo);
+				epoch_mb(obj, tsize, data, target, index, delta, tdelta, output, tinp, tempi, tempo);
 				mse = obj->mse;
 				vitr++;
 				if (gen == 1) {
@@ -3257,7 +3210,7 @@ void train_null(nnet_object obj, int size, double *inp, double *out) {
 		epoch = 1;
 		while (mse > obj->tmse && epoch < obj->emax) {
 			epoch_irp(obj, tsize, data, target, index, delta, slope, tslope, output, tinp, tempi, tempo, tdelta);
-			mse = obj->imse = obj->mse;
+			mse = obj->mse;
 			vitr++;
 			if (gen == 1) {
 				gmse = gvmse(obj, gsize, data + itrd, target + itrt, indexg, output, tempi, tempo);
