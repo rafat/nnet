@@ -1922,9 +1922,9 @@ void backpropagate_rp_2(nnet_object obj, double *delta, double *slope, double *t
 
 }
 
-void backpropagate_irp_2(nnet_object obj, double *delta, double *slope, double *tslope, double *updatevalue) {
+void backpropagate_irp_2(nnet_object obj, double *slope, double *tslope, double *updatevalue) {
 	int i;
-	double value, max_step, delta_min, ndelta, del;
+	double value, max_step, delta_min, ndelta,del;
 
 	max_step = obj->rp_max_step;
 	delta_min = obj->rp_delta_min;
@@ -1932,10 +1932,9 @@ void backpropagate_irp_2(nnet_object obj, double *delta, double *slope, double *
 
 	for (i = 0; i < obj->lw; ++i) {
 		value = signx(slope[i] * tslope[i]);
-		if (value > 0) {
+		if (value >= 0) {
 			ndelta = updatevalue[i] * obj->rp_eta_p;
 			ndelta = pmin(ndelta, max_step);
-			del = signx(slope[i]) * ndelta;
 			updatevalue[i] = ndelta;
 			tslope[i] = slope[i];
 		}
@@ -1944,17 +1943,11 @@ void backpropagate_irp_2(nnet_object obj, double *delta, double *slope, double *
 			ndelta = pmax(ndelta, delta_min);
 			updatevalue[i] = ndelta;
 			tslope[i] = 0.0;
-			if (obj->mse > obj->imse) {
-				del = -delta[i];
-			}
-		}
-		else {
-			del = signx(slope[i]) * updatevalue[i];
-			tslope[i] = slope[i];
+			
 		}
 
+		del = signx(slope[i]) * ndelta;
 		obj->weight[i] += del;
-		delta[i] = del;
 		slope[i] = 0.0;
 	}
 
@@ -2472,7 +2465,7 @@ static void epoch_irp(nnet_object obj, int tsize, double *data, double *target, 
 	}
 	//printf("\n");
 
-	backpropagate_irp_2(obj, delta, slope, tslope, updatevalue);
+	backpropagate_irp_2(obj, slope, tslope, updatevalue);
 
 	gmse = 0.0;
 
