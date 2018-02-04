@@ -1889,29 +1889,32 @@ void backpropagate_rp_1(nnet_object obj, double *output, double *desired, int le
 void backpropagate_rp_2(nnet_object obj, double *delta, double *slope, double *tslope, double *updatevalue) {
 	int i;
 	double value, max_step,delta_min,ndelta,del;
+	double rp_eta_n, rp_eta_p;
 
 	max_step = obj->rp_max_step;
 	delta_min = obj->rp_delta_min;
+	rp_eta_n = obj->rp_eta_n;
+	rp_eta_p = obj->rp_eta_p;
 	del = 0.0;
 	
 	for (i = 0; i < obj->lw; ++i) {
-		value = signx(slope[i] * tslope[i]);
+		value = NNET_SIGN(slope[i] * tslope[i]);
 		if (value > 0) {
-			ndelta = updatevalue[i] * obj->rp_eta_p;
-			ndelta = pmin(ndelta, max_step);
-			del = signx(slope[i]) * ndelta;
+			ndelta = updatevalue[i] * rp_eta_p;
+			ndelta = NNET_MIN(ndelta, max_step);
+			del = NNET_SIGN(slope[i]) * ndelta;
 			updatevalue[i] = ndelta;
 			tslope[i] = slope[i];
 		}
 		else if (value < 0) {
-			ndelta = updatevalue[i] * obj->rp_eta_n;
-			ndelta = pmax(ndelta, delta_min);
+			ndelta = updatevalue[i] * rp_eta_n;
+			ndelta = NNET_MAX(ndelta, delta_min);
 			updatevalue[i] = ndelta;
 			tslope[i] = 0.0;
 			del = -delta[i];
 		}
 		else {
-			del = signx(slope[i]) * updatevalue[i];
+			del = NNET_SIGN(slope[i]) * updatevalue[i];
 			tslope[i] = slope[i];
 		}
 
@@ -1925,28 +1928,31 @@ void backpropagate_rp_2(nnet_object obj, double *delta, double *slope, double *t
 void backpropagate_irp_2(nnet_object obj, double *slope, double *tslope, double *updatevalue) {
 	int i;
 	double value, max_step, delta_min, ndelta,del;
+	double rp_eta_n,rp_eta_p;
 
 	max_step = obj->rp_max_step;
 	delta_min = obj->rp_delta_min;
+	rp_eta_n = obj->rp_eta_n;
+	rp_eta_p = obj->rp_eta_p;
 	del = 0.0;
 
 	for (i = 0; i < obj->lw; ++i) {
-		value = signx(slope[i] * tslope[i]);
+		value = NNET_SIGN(slope[i] * tslope[i]);
 		if (value >= 0) {
-			ndelta = updatevalue[i] * obj->rp_eta_p;
-			ndelta = pmin(ndelta, max_step);
+			ndelta = updatevalue[i] * rp_eta_p;
+			ndelta = NNET_MIN(ndelta, max_step);
 			updatevalue[i] = ndelta;
 			tslope[i] = slope[i];
 		}
 		else if (value < 0) {
-			ndelta = updatevalue[i] * obj->rp_eta_n;
-			ndelta = pmax(ndelta, delta_min);
+			ndelta = updatevalue[i] * rp_eta_n;
+			ndelta = NNET_MAX(ndelta, delta_min);
 			updatevalue[i] = ndelta;
 			tslope[i] = 0.0;
 			
 		}
 
-		del = signx(slope[i]) * ndelta;
+		del = NNET_SIGN(slope[i]) * ndelta;
 		obj->weight[i] += del;
 		slope[i] = 0.0;
 	}

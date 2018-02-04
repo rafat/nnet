@@ -9,7 +9,11 @@
 #include <time.h>
 #include <math.h>
 
-#include "matrix.h"
+#include "optimc.h"
+
+#define NNET_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define NNET_MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define NNET_SIGN(a) (((a) >= (0.0)) ? (1) : (-1))
 
 #ifdef __cplusplus
 extern "C" {
