@@ -1,6 +1,6 @@
 #include "netint.h"
 
-void logsig(double *x, double N, double *y) {
+void logsig(float *x, float N, float *y) {
 	int i;
 	for (i = 0; i < N; ++i) {
 		y[i] = (1.0 / (1.0 + exp(-x[i])));
@@ -10,9 +10,9 @@ void logsig(double *x, double N, double *y) {
 	}
 }
 
-void tansig(double *x, double N, double *y) {
+void tansig(float *x, float N, float *y) {
 	int i;
-	double a, b;
+	float a, b;
 	for (i = 0; i < N; ++i) {
 		//y[i] = (1.0 - exp(-2 * x[i])) / (1.0 + exp(-2 * x[i]));
 		//y[i] = -1.0 + 2.0 / (1.0 + exp(-2 * x[i]));
@@ -27,7 +27,7 @@ void tansig(double *x, double N, double *y) {
 	}
 }
 
-void hardlim(double *x, double N, double *y) {
+void hardlim(float *x, float N, float *y) {
 	int i;
 	for (i = 0; i < N; ++i) {
 		if (x[i] <= 0.0) {
@@ -39,7 +39,7 @@ void hardlim(double *x, double N, double *y) {
 	}
 }
 
-void purelin(double *x, double N, double *y) {
+void purelin(float *x, float N, float *y) {
 	int i;
 	for (i = 0; i < N; ++i) {
 		y[i] = x[i];
@@ -48,8 +48,8 @@ void purelin(double *x, double N, double *y) {
 
 //Clip
 
-double clip_value(double x, double lo, double hi) {
-	double clip;
+float clip_value(float x, float lo, float hi) {
+	float clip;
 	clip = x;
 	if (x < lo) {
 		clip = lo;
@@ -63,8 +63,8 @@ double clip_value(double x, double lo, double hi) {
 
 // Derivatives
 
-double logsig_der(double value) {
-	double temp2,df;
+float logsig_der(float value) {
+	float temp2,df;
 
 	temp2 = clip_value(value,0.01, 0.99);
 
@@ -73,8 +73,8 @@ double logsig_der(double value) {
 	return df;
 }
 
-double tansig_der(double value) {
-	double temp2, df;
+float tansig_der(float value) {
+	float temp2, df;
 
 	temp2 = clip_value(value, -0.98, 0.98);
 
@@ -97,9 +97,9 @@ int intmax(int* x, int N) {
 	return m;
 }
 
-double mean(double* vec, int N) {
+float mean(float* vec, int N) {
 	int i;
-	double m;
+	float m;
 	m = 0.0;
 
 	for (i = 0; i < N; ++i) {
@@ -109,8 +109,8 @@ double mean(double* vec, int N) {
 	return m;
 }
 
-double std(double* vec, int N) {
-	double v, temp, m;
+float std(float* vec, int N) {
+	float v, temp, m;
 	int i;
 	v = 0.0;
 	m = mean(vec, N);
@@ -129,11 +129,11 @@ double std(double* vec, int N) {
 
 
 
-double dmax(double* x, int N) {
+float dmax(float* x, int N) {
 	int i;
-	double m;
+	float m;
 
-	m = -DBL_MAX;
+	m = -FLT_MAX;
 
 	for (i = 0; i < N; ++i) {
 		if (x[i] > m) {
@@ -145,11 +145,11 @@ double dmax(double* x, int N) {
 }
 
 
-double dmin(double* x, int N) {
+float dmin(float* x, int N) {
 	int i;
-	double m;
+	float m;
 
-	m = DBL_MAX;
+	m = FLT_MAX;
 
 	for (i = 0; i < N; ++i) {
 		if (x[i] < m) {
@@ -161,8 +161,8 @@ double dmin(double* x, int N) {
 }
 
 
-double neuron_oup(double *inp, int N, double *weights, double bias) {
-	double a, tmp;
+float neuron_oup(float *inp, int N, float *weights, float bias) {
+	float a, tmp;
 	int i;
 	tmp = bias;
 
@@ -175,10 +175,10 @@ double neuron_oup(double *inp, int N, double *weights, double bias) {
 	return a;
 }
 
-void neuronlayer_logsig_oup(double *inp, int N, int S, double *weights, double *oup) {
+void neuronlayer_logsig_oup(float *inp, int N, int S, float *weights, float *oup) {
 	int i, j, itr, N1;
-	double* tmp;
-	tmp = (double*)malloc(sizeof(double)* S);
+	float* tmp;
+	tmp = (float*)malloc(sizeof(float)* S);
 	/*
 	N - Number of Inputs going into each Neuron in the Layer
 	S - Number of Neutrons in the Layer
@@ -200,10 +200,10 @@ void neuronlayer_logsig_oup(double *inp, int N, int S, double *weights, double *
 	free(tmp);
 }
 
-void neuronlayer_tansig_oup(double *inp, int N, int S, double *weights, double *oup) {
+void neuronlayer_tansig_oup(float *inp, int N, int S, float *weights, float *oup) {
 	int i, j, itr, N1;
-	double* tmp;
-	tmp = (double*)malloc(sizeof(double)* S);
+	float* tmp;
+	tmp = (float*)malloc(sizeof(float)* S);
 	/*
 	N - Number of Inputs going into each Neuron in the Layer
 	S - Number of Neutrons in the Layer
@@ -226,10 +226,10 @@ void neuronlayer_tansig_oup(double *inp, int N, int S, double *weights, double *
 	free(tmp);
 }
 
-void neuronlayer_purelin_oup(double *inp, int N, int S, double *weights, double *oup) {
+void neuronlayer_purelin_oup(float *inp, int N, int S, float *weights, float *oup) {
 	int i, j, itr, N1;
-	double* tmp;
-	tmp = (double*)malloc(sizeof(double)* S);
+	float* tmp;
+	tmp = (float*)malloc(sizeof(float)* S);
 	/*
 	N - Number of Inputs going into each Neuron in the Layer
 	S - Number of Neutrons in the Layer

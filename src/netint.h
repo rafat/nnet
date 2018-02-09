@@ -11,6 +11,8 @@
 
 #include "matrix.h"
 
+#pragma warning(disable:4996)
+
 #define NNET_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define NNET_MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define NNET_SIGN(a) (((a) >= (0.0)) ? (1) : (-1))
@@ -19,37 +21,37 @@
 extern "C" {
 #endif
 
-void logsig(double *x, double N, double *y);
+void logsig(float *x, float N, float *y);
 
-void tansig(double *x, double N, double *y);
+void tansig(float *x, float N, float *y);
 
-void hardlim(double *x, double N, double *y);
+void hardlim(float *x, float N, float *y);
 
-void purelin(double *x, double N, double *y);
+void purelin(float *x, float N, float *y);
 
-double clip_value(double x, double lo, double hi);
+float clip_value(float x, float lo, float hi);
 
-double logsig_der(double value);
+float logsig_der(float value);
 
-double tansig_der(double value);
+float tansig_der(float value);
 
 int intmax(int* x, int N);
 
-double mean(double* vec, int N);
+float mean(float* vec, int N);
 
-double std(double* vec, int N);
+float std(float* vec, int N);
 
-double dmax(double* vec, int N);
+float dmax(float* vec, int N);
 
-double dmin(double* vec, int N);
+float dmin(float* vec, int N);
 
-double neuron_oup(double *inp, int N, double *weights, double bias);
+float neuron_oup(float *inp, int N, float *weights, float bias);
 
-void neuronlayer_logsig_oup(double *inp, int N, int S, double *weights, double *oup);
+void neuronlayer_logsig_oup(float *inp, int N, int S, float *weights, float *oup);
 
-void neuronlayer_tansig_oup(double *inp, int N, int S, double *weights, double *oup);
+void neuronlayer_tansig_oup(float *inp, int N, int S, float *weights, float *oup);
 
-void neuronlayer_purelin_oup(double *inp, int N, int S, double *weights, double *oup);
+void neuronlayer_purelin_oup(float *inp, int N, int S, float *weights, float *oup);
 
 
 #ifdef __cplusplus

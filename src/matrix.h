@@ -29,129 +29,129 @@
 extern "C" {
 #endif
 
-double macheps();
+float macheps();
 
-double pmax(double a, double b);
+float pmax(float a, float b);
 
-double pmin(double a, double b);
+float pmin(float a, float b);
 
 int imax(int a, int b);
 
 int imin(int a, int b);
 
-double signx(double x);
+float signx(float x);
 
-double l2norm(double *vec, int N);
+float l2norm(float *vec, int N);
 
 int compare (const void* ind1, const void* ind2);
 
-void sort1d(double* v,int N, int* pos);
+void sort1d(float* v,int N, int* pos);
 
 //Array Parallel Implementation may have a lot of overhead
 
-double array_max_abs(double *array,int N);
+float array_max_abs(float *array,int N);
 
-double array_max(double *array,int N);
+float array_max(float *array,int N);
 
-double array_min(double *array,int N);
+float array_min(float *array,int N);
 
-//void mmult(double* A, double *B, double *C,int ra,int ca, int rb, int cb);
+//void mmult(float* A, float *B, float *C,int ra,int ca, int rb, int cb);
 
-void dtranspose(double *sig, int rows, int cols,double *col);
+void dtranspose(float *sig, int rows, int cols,float *col);
 
-void stranspose(double *sig, int rows, int cols,double *col);
+void stranspose(float *sig, int rows, int cols,float *col);
 
-void rtranspose(double *m, int rows, int cols,double *n, int r, int c);
+void rtranspose(float *m, int rows, int cols,float *n, int r, int c);
 
-void ctranspose(double *sig, int rows, int cols,double *col);
+void ctranspose(float *sig, int rows, int cols,float *col);
 
-void mtranspose(double *sig, int rows, int cols,double *col);
+void mtranspose(float *sig, int rows, int cols,float *col);
 
-void itranspose(double *A, int M, int N);
+void itranspose(float *A, int M, int N);
 
-//int minverse(double *xxt, int p);
+//int minverse(float *xxt, int p);
 
-void mdisplay(double *A, int row, int col);
+void mdisplay(float *A, int row, int col);
 
-void madd(double* A, double* B, double* C,int rows,int cols);
+void madd(float* A, float* B, float* C,int rows,int cols);
 
-void msub(double* A, double* B, double* C,int rows,int cols);
+void msub(float* A, float* B, float* C,int rows,int cols);
 
-void scale(double *A, int rows, int cols, double alpha);
+void scale(float *A, int rows, int cols, float alpha);
 
-void nmult(double* A, double* B, double* C,int m,int n, int p);
+void nmult(float* A, float* B, float* C,int m,int n, int p);
 
-void tmult(double* A, double* B, double* C,int m,int n, int p);
+void tmult(float* A, float* B, float* C,int m,int n, int p);
 
-void recmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, int sC);
+void recmult(float* A, float* B, float* C,int m,int n, int p,int sA,int sB, int sC);
 
-void rmult(double* A, double* B, double* C,int m,int n, int p);
+void rmult(float* A, float* B, float* C,int m,int n, int p);
 
 int findrec(int *a, int *b, int *c);
 
-double house_2(double*x,int N,double *v);
+float house_2(float*x,int N,float *v);
 
-void add_zero_pad(double *X, int rows, int cols, int zrow, int zcol,double *Y);
+void add_zero_pad(float *X, int rows, int cols, int zrow, int zcol,float *Y);
 
-void remove_zero_pad(double *X, int rows, int cols, int zrow, int zcol,double *Y);
+void remove_zero_pad(float *X, int rows, int cols, int zrow, int zcol,float *Y);
 
-void madd_stride(double* A, double* B, double* C,int rows,int cols,int sA,int sB,int sC);
+void madd_stride(float* A, float* B, float* C,int rows,int cols,int sA,int sB,int sC);
 
-void msub_stride(double* A, double* B, double* C,int rows,int cols,int sA,int sB,int sC);
+void msub_stride(float* A, float* B, float* C,int rows,int cols,int sA,int sB,int sC);
 
-void rmadd_stride(double* A, double* B, double* C,int rows,int cols,int p,int sA,int sB,int sC);
+void rmadd_stride(float* A, float* B, float* C,int rows,int cols,int p,int sA,int sB,int sC);
 
-void rmsub_stride(double* A, double* B, double* C,int rows,int cols,int p,int sA,int sB,int sC);
+void rmsub_stride(float* A, float* B, float* C,int rows,int cols,int p,int sA,int sB,int sC);
 
-void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB,int sC);
+void srecmult(float* A, float* B, float* C,int m,int n, int p,int sA,int sB,int sC);
 
-void smult(double* A, double* B, double* C,int m,int n, int p);
+void smult(float* A, float* B, float* C,int m,int n, int p);
 
-void mmult(double* A, double* B, double* C,int m,int n, int p);
+void mmult(float* A, float* B, float* C,int m,int n, int p);
 
-void ludecomp(double *A,int N,int *ipiv);
+void ludecomp(float *A,int N,int *ipiv);
 
-void linsolve(double *A,int N,double *b,int *ipiv,double *x);
+void linsolve(float *A,int N,float *b,int *ipiv,float *x);
 
-void minverse(double *A,int M,int *ipiv,double *inv);
+void minverse(float *A,int M,int *ipiv,float *inv);
 
-void eye(double *mat,int N);
+void eye(float *mat,int N);
 
-double house(double*x,int N,double *v);
+float house(float*x,int N,float *v);
 
-void housemat(double *v, int N,double beta,double *mat);
+void housemat(float *v, int N,float beta,float *mat);
 
-void qrdecomp(double *A, int M, int N,double *bvec);
+void qrdecomp(float *A, int M, int N,float *bvec);
 
-void getQR(double *A,int M,int N,double *bvec,double *Q, double *R);
+void getQR(float *A,int M,int N,float *bvec,float *Q, float *R);
 
-void hessenberg(double *A,int N);
+void hessenberg(float *A,int N);
 
-void francisQR(double *A,int N);
+void francisQR(float *A,int N);
 
-void eig22(double *A, int stride,double *eigre,double *eigim);
+void eig22(float *A, int stride,float *eigre,float *eigim);
 
-int francis_iter(double *A, int N, double *H);
+int francis_iter(float *A, int N, float *H);
 
-void eig(double *A,int N,double *eigre,double *eigim);
+void eig(float *A,int N,float *eigre,float *eigim);
 
-int cholu(double *A, int N);
+int cholu(float *A, int N);
 
-int bcholu(double *A, int N);
+int bcholu(float *A, int N);
 
-int chol(double *A, int N);
+int chol(float *A, int N);
 
-void chold(double *A, int N);
+void chold(float *A, int N);
 
-void svd_sort(double *U,int M,int N,double *V,double *q);
+void svd_sort(float *U,int M,int N,float *V,float *q);
 
-int svd(double *A,int M,int N,double *U,double *V,double *q);
+int svd(float *A,int M,int N,float *U,float *V,float *q);
 
-int svd_transpose(double *A, int M, int N, double *U, double *V, double *q);
+int svd_transpose(float *A, int M, int N, float *U, float *V, float *q);
 
-int rank(double *A, int M,int N);
+int rank(float *A, int M,int N);
 
-int lls_svd_multi(double *A, double *b, int M, int N, double *x);// Ax =b where x is a matrix A - M * N, x - N * p , B - M * p
+int lls_svd_multi(float *A, float *b, int M, int N, float *x);// Ax =b where x is a matrix A - M * N, x - N * p , B - M * p
 
 #ifdef __cplusplus
 }

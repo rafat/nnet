@@ -9,7 +9,7 @@ ndata_object ndata_init(int inputs, int outputs, int patterns) {
 
 	dlen = dip + dop;
 
-	obj = (ndata_object)malloc(sizeof(struct ndata_set) + sizeof(double)* dlen);
+	obj = (ndata_object)malloc(sizeof(struct ndata_set) + sizeof(float)* dlen);
 
 	obj->I = inputs;
 	obj->O = outputs;
@@ -25,16 +25,16 @@ ndata_object ndata_init(int inputs, int outputs, int patterns) {
 	return obj;
 }
 
-void interleave(double *inp, int size, int M, double *oup) {
+void interleave(float *inp, int size, int M, float *oup) {
 	mtranspose(inp, M, size, oup);
 }
 
-void data_enter(ndata_object obj,double *data, double *target) {
+void data_enter(ndata_object obj,float *data, float *target) {
 	interleave(data, obj->P, obj->I, obj->data);
 	interleave(target, obj->P, obj->O, obj->target);
 }
 
-void data_interleave_enter(ndata_object obj, double *data, double *target) {
+void data_interleave_enter(ndata_object obj, float *data, float *target) {
 	int i;
 
 	for (i = 0; i < obj->P * obj->I; ++i) {
@@ -82,10 +82,10 @@ void csvreader(ndata_object obj,const char *filepath, const char *delimiter, int
 			}
 			i++;
 			for (iter = 0; iter < obj->I; iter++) {
-				obj->data[t1+iter] = (double) temp[iter];
+				obj->data[t1+iter] = (float) temp[iter];
 			}
 			for (iter = obj->I; iter < len; iter++) {
-				obj->target[t2+iter - obj->I] = (double) temp[iter];
+				obj->target[t2+iter - obj->I] = (float) temp[iter];
 			}
 
 			t1 += obj->I;
@@ -136,7 +136,7 @@ void file_sep_line_enter(ndata_object obj, const char *filepath, const char *del
 				}
 				i++;
 				for (iter = 0; iter < len; iter++) {
-					obj->data[t1 + iter] = (double)temp[iter];
+					obj->data[t1 + iter] = (float)temp[iter];
 				}
 				t1 += obj->I;
 			}
@@ -151,7 +151,7 @@ void file_sep_line_enter(ndata_object obj, const char *filepath, const char *del
 				}
 				i++;
 				for (iter = 0; iter < len; iter++) {
-					obj->target[t2 + iter] = (double)temp[iter];
+					obj->target[t2 + iter] = (float)temp[iter];
 				}
 
 				t2 += obj->O;
@@ -205,10 +205,10 @@ void file_rev_enter(ndata_object obj, const char *filepath, const char *delimite
 			}
 			i++;
 			for (iter = 0; iter < obj->O; iter++) {
-				obj->target[t1 + iter] = (double)temp[iter];
+				obj->target[t1 + iter] = (float)temp[iter];
 			}
 			for (iter = obj->O; iter < len; iter++) {
-				obj->data[t2 + iter - obj->O] = (double)temp[iter];
+				obj->data[t2 + iter - obj->O] = (float)temp[iter];
 			}
 
 			t1 += obj->O;
@@ -234,23 +234,23 @@ void ndata_check(ndata_object obj) {
 	printf("INPUTS : \n");
 	printf("Pattern %d :\t", 1);
 	for (i = 0; i < inp; ++i) {
-		printf("%g\t", obj->data[i]);
+		printf("%f\t", obj->data[i]);
 	}
 	printf("\n");
 	printf("Pattern %d :\t", p);
 	for (i = (p-1)*inp; i < inp*p; ++i) {
-		printf("%g\t", obj->data[i]);
+		printf("%f\t", obj->data[i]);
 	}
 	printf("\n\n");
 	printf("TARGETS : \n");
 	printf("Pattern %d :\t", 1);
 	for (i = 0; i < oup; ++i) {
-		printf("%g\t", obj->target[i]);
+		printf("%f\t", obj->target[i]);
 	}
 	printf("\n");
 	printf("Pattern %d :\t", p);
 	for (i = (p - 1)*oup; i < oup*p; ++i) {
-		printf("%g\t", obj->target[i]);
+		printf("%f\t", obj->target[i]);
 	}
 	printf("\n");
 }

@@ -11,16 +11,16 @@
  */
 
 typedef struct {
-	double* a;
+	float* a;
 	int b;
 } vipair;
 
-double macheps() {
-	double macheps;
+float macheps() {
+	float macheps;
 	macheps = 1.0;
 
 	while ((macheps + 1.0) > 1.0) {
-		macheps = macheps / 2.0;
+		macheps = macheps / 2.0f;
 	}
 
 	macheps = macheps * 2;
@@ -28,7 +28,7 @@ double macheps() {
 	return macheps;
 }
 
-double pmax(double a, double b) {
+float pmax(float a, float b) {
 	if (a > b) {
 		return a;
 	}
@@ -37,7 +37,7 @@ double pmax(double a, double b) {
 	}
 }
 
-double pmin(double a, double b) {
+float pmin(float a, float b) {
 	if (a < b) {
 		return a;
 	}
@@ -64,8 +64,8 @@ int imin(int a, int b) {
 	}
 }
 
-double signx(double x) {
-	double sgn;
+float signx(float x) {
+	float sgn;
 	if (x >= 0.) {
 		sgn = 1.0;
 	}
@@ -75,14 +75,14 @@ double signx(double x) {
 	return sgn;
 }
 
-double l2norm(double *vec, int N) {
-	double l2, sum;
+float l2norm(float *vec, int N) {
+	float l2, sum;
 	int i;
 	sum = 0.;
 	for (i = 0; i < N; ++i) {
 		sum += vec[i] * vec[i];
 	}
-	l2 = sqrt(sum);
+	l2 = sqrtf(sum);
 	return l2;
 }
 
@@ -96,7 +96,7 @@ int compare (const void* ind1, const void* ind2)
 		return 0;
 }
 
-void sort1d(double* v,int N, int* pos)
+void sort1d(float* v,int N, int* pos)
 {
     vipair* val = NULL;
     int i;
@@ -119,22 +119,22 @@ void sort1d(double* v,int N, int* pos)
     free(val);
 }
 
-double array_max_abs(double *array,int N) {
+float array_max_abs(float *array,int N) {
 	int i;
-	double m = 0.0;
+	float m = 0.0;
 
 	for (i = 0; i < N;++i) {
 		if (fabs(array[i]) > m ) {
-			m = fabs(array[i]);
+			m = fabsf(array[i]);
 		}
 	}
 
 	return m;
 }
 
-double array_max(double *array,int N) {
+float array_max(float *array,int N) {
 	int i;
-	double m = array[0];
+	float m = array[0];
 
 	for (i = 1; i < N;++i) {
 		if (array[i] > m ) {
@@ -145,9 +145,9 @@ double array_max(double *array,int N) {
 	return m;
 }
 
-double array_min(double *array,int N) {
+float array_min(float *array,int N) {
 	int i;
-	double m = array[0];
+	float m = array[0];
 	for (i = 1; i < N;++i) {
 		if (array[i] < m ) {
 			m = array[i];
@@ -157,7 +157,7 @@ double array_min(double *array,int N) {
 	return m;
 }
 
-void dtranspose(double *sig, int rows, int cols,double *col) {
+void dtranspose(float *sig, int rows, int cols,float *col) {
     int max,ud,i,k;
     if (rows >= cols) {
     	max = cols;
@@ -188,7 +188,7 @@ void dtranspose(double *sig, int rows, int cols,double *col) {
 
 }
 
-void stranspose(double *sig, int rows, int cols,double *col) {
+void stranspose(float *sig, int rows, int cols,float *col) {
 	int t,u;
 	register int i,j;
 //	#pragma omp parallel for private(i,j,t,u)
@@ -203,7 +203,7 @@ void stranspose(double *sig, int rows, int cols,double *col) {
 	
 }
 
-void rtranspose(double *m, int rows, int cols,double *n, int r, int c) {
+void rtranspose(float *m, int rows, int cols,float *n, int r, int c) {
 	register int i,j;
 	int rm,cm;
 	int rm1,cm1,rm2,cm2;
@@ -222,13 +222,13 @@ void rtranspose(double *m, int rows, int cols,double *n, int r, int c) {
 
 	} else if (cols >= rows) {
 		rm = rows;
-		cm1 = (int) ceil((double) cols/2.0);
+		cm1 = (int) ceil((float) cols/2.0);
 		cm2 = cols - cm1;
 
 		rtranspose(m,rm,cm1,n,r,c);
 		rtranspose(m+cm1,rm,cm2,n+cm1*r,r,c);
 	} else if (rows > cols) {
-		rm1 = (int) ceil((double) rows/2.0);
+		rm1 = (int) ceil((float) rows/2.0);
 		rm2 = rows - rm1;
 		cm = cols;
 		rtranspose(m,rm1,cm,n,r,c);
@@ -237,7 +237,7 @@ void rtranspose(double *m, int rows, int cols,double *n, int r, int c) {
 
 }
 
-void ctranspose(double *sig, int rows, int cols,double *col) {
+void ctranspose(float *sig, int rows, int cols,float *col) {
 	int r,c;
 	int block;
 
@@ -251,7 +251,7 @@ void ctranspose(double *sig, int rows, int cols,double *col) {
 	}
 }
 
-void mtranspose(double *sig, int rows, int cols,double *col) {
+void mtranspose(float *sig, int rows, int cols,float *col) {
 	int block;
 	
 	block = (int) TBLOCK;
@@ -263,10 +263,10 @@ void mtranspose(double *sig, int rows, int cols,double *col) {
 	}
 }
 
-void itranspose(double *A, int M, int N) {
-	int i, j, p, iter, iter2;
-	double *buf;
-	double temp;
+void itranspose(float *A, int M, int N) {
+	int i, j, p, iter;
+	float *buf;
+	float temp;
 
 	if (M == N) {
 		for (i = 0; i < N; ++i) {
@@ -279,7 +279,7 @@ void itranspose(double *A, int M, int N) {
 	} else if (M > N) {
 
 		p = M - N;
-		buf = (double*)malloc(sizeof(double)* p * N);
+		buf = (float*)malloc(sizeof(float)* p * N);
 
 		memcpy(buf, A + N * N, sizeof(*A)*p*N);
 
@@ -307,7 +307,7 @@ void itranspose(double *A, int M, int N) {
 	}
 	else if (M < N) {
 		p = N - M;
-		buf = (double*)malloc(sizeof(double)* p * M);
+		buf = (float*)malloc(sizeof(float)* p * M);
 
 		for (i = 0; i < M; ++i) {
 			iter = M + i*N;
@@ -333,20 +333,20 @@ void itranspose(double *A, int M, int N) {
 }
 
 
-void mdisplay(double *A, int row, int col) {
+void mdisplay(float *A, int row, int col) {
 	int i,j;
 	printf("\n MATRIX Order : %d X %d \n \n",row,col);
 	
 	for (i = 0; i < row; i++) {
 		printf("R%d: ",i);
 		for ( j = 0; j < col;j++) {
-			printf("%g ",A[i*col + j]);
+			printf("%f ",A[i*col + j]);
 		}
 		printf(":R%d \n",i);
 	}
 }
 
-void madd(double* A, double* B, double* C,int rows,int cols) {
+void madd(float* A, float* B, float* C,int rows,int cols) {
 	int N,i;
 	/*
 	 * C = A + B . All matrices have identical dimensions rows X cols
@@ -360,7 +360,7 @@ void madd(double* A, double* B, double* C,int rows,int cols) {
 	}
 }
 
-void msub(double* A, double* B, double* C,int rows,int cols) {
+void msub(float* A, float* B, float* C,int rows,int cols) {
 	int N,i;
 	/*
 	 * C = A - B . All matrices have identical dimensions rows X cols
@@ -374,7 +374,7 @@ void msub(double* A, double* B, double* C,int rows,int cols) {
 	}
 }
 
-void scale(double *A, int rows, int cols, double alpha) {
+void scale(float *A, int rows, int cols, float alpha) {
 	int N,i;
 	/*
 	 * A = alpha * A
@@ -389,7 +389,7 @@ void scale(double *A, int rows, int cols, double alpha) {
 	}
 }
 
-void nmult(double* A, double* B, double* C,int ra,int ca, int cb) {
+void nmult(float* A, float* B, float* C,int ra,int ca, int cb) {
 	register int i,j,k;
 	int u,v,t,rb;
 	
@@ -416,11 +416,11 @@ void nmult(double* A, double* B, double* C,int ra,int ca, int cb) {
 
 }
 
-void tmult(double* A, double* B, double* C,int ra,int ca, int cb) {
+void tmult(float* A, float* B, float* C,int ra,int ca, int cb) {
 	register int i,j,k;
 	int u,v,t,rb;
-	double *BT;
-	BT = (double*) malloc(sizeof(double) * ca * cb);
+	float *BT;
+	BT = (float*) malloc(sizeof(float) * ca * cb);
 	/*
 	 * C = A * B , where A is a ra*ca matric while B is a rb*cb
 	 * with ca = rb
@@ -447,7 +447,7 @@ void tmult(double* A, double* B, double* C,int ra,int ca, int cb) {
 }
 
 
-void recmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, int sC) {
+void recmult(float* A, float* B, float* C,int m,int n, int p,int sA,int sB, int sC) {
 	int m2,n2,p2;
 	register int i,j,k;
 	int u,v,t;
@@ -466,23 +466,23 @@ void recmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, i
 
 		
 	} else if (m >= n && m >= p) {
-		m2 = (int) ceil((double) m / 2.0);
+		m2 = (int) ceil((float) m / 2.0);
 		recmult(A,B,C,m2,n,p,sA,sB,sC);
 		recmult(A + m2*sB,B,C + m2*sC,m-m2,n,p,sA,sB,sC);
 		
 	} else if (n >= m && n >= p) {
-		n2 = (int) ceil((double) n / 2.0);
+		n2 = (int) ceil((float) n / 2.0);
 		recmult(A,B,C,m,n2,p,sA,sB,sC);
 		recmult(A+n2,B+n2*sC,C,m,n-n2,p,sA,sB,sC);
 		
 	} else if (p >= m && p >= n) {
-		p2 = (int) ceil((double) p / 2.0);
+		p2 = (int) ceil((float) p / 2.0);
 		recmult(A,B,C,m,n,p2,sA,sB,sC);
 		recmult(A,B+p2,C+p2,m,n,p-p2,sA,sB,sC);
 	}
 }
 
-void rmult(double* A, double* B, double* C,int m,int n, int p) {
+void rmult(float* A, float* B, float* C,int m,int n, int p) {
 	int strA,strB,strC;
 	int N;
 	register int i;
@@ -500,19 +500,19 @@ void rmult(double* A, double* B, double* C,int m,int n, int p) {
 
 int findrec(int *a, int *b, int *c) {
 	int rec;
-	double da,db,dc,mul;
-	da = (double) *a;
-	db = (double) *b;
-	dc = (double) *c;
+	float da,db,dc,mul;
+	da = (float) *a;
+	db = (float) *b;
+	dc = (float) *c;
 	rec = 0;
 	mul = 1.;
 	
-	while (da + db + dc > (double) CUTOFF) {
+	while (da + db + dc > (float) CUTOFF) {
 		rec++;
 		mul *= 2;
-		da = ceil(da/2.);
-		db = ceil(db/2.);
-		dc = ceil(dc/2.);
+		da = ceilf(da/2.0f);
+		db = ceilf(db/2.0f);
+		dc = ceilf(dc/2.0f);
 	}
 	*a = (int) da * mul;
 	*b = (int) db * mul;
@@ -521,7 +521,7 @@ int findrec(int *a, int *b, int *c) {
 	return rec;
 }
 
-void add_zero_pad(double *X, int rows, int cols, int zrow, int zcol,double *Y) {
+void add_zero_pad(float *X, int rows, int cols, int zrow, int zcol,float *Y) {
 	int r,c,i,j,u,v;
 	r = rows + zrow;
 	c = cols + zcol;
@@ -546,7 +546,7 @@ void add_zero_pad(double *X, int rows, int cols, int zrow, int zcol,double *Y) {
 	
 }
 
-void remove_zero_pad(double *Y, int rows, int cols, int zrow, int zcol,double *Z) {
+void remove_zero_pad(float *Y, int rows, int cols, int zrow, int zcol,float *Z) {
 	int r,c,i,j,u,v;
 	r = rows - zrow;
 	c = cols - zcol;
@@ -560,7 +560,7 @@ void remove_zero_pad(double *Y, int rows, int cols, int zrow, int zcol,double *Z
 	}
 }
 
-void madd_stride(double* A, double* B, double* C,int rows,int cols,int sA,int sB,int sC) {
+void madd_stride(float* A, float* B, float* C,int rows,int cols,int sA,int sB,int sC) {
 	int i,j,u,v,w;
 	 
 	for (i = 0; i < rows; ++i) {
@@ -573,7 +573,7 @@ void madd_stride(double* A, double* B, double* C,int rows,int cols,int sA,int sB
 	}
 }
 
-void msub_stride(double* A, double* B, double* C,int rows,int cols,int sA,int sB,int sC) {
+void msub_stride(float* A, float* B, float* C,int rows,int cols,int sA,int sB,int sC) {
 	int i,j,u,v,w;
 	 
 	for (i = 0; i < rows; ++i) {
@@ -586,7 +586,7 @@ void msub_stride(double* A, double* B, double* C,int rows,int cols,int sA,int sB
 	}
 }
 
-void rmadd_stride(double* A, double* B, double* C,int rows,int cols,int p,int sA,int sB,int sC) {
+void rmadd_stride(float* A, float* B, float* C,int rows,int cols,int p,int sA,int sB,int sC) {
 	int i,j,u,v,w;
 	if (rows + cols + p <= CUTOFF) {
 		for (i = 0; i < rows; ++i) {
@@ -607,7 +607,7 @@ void rmadd_stride(double* A, double* B, double* C,int rows,int cols,int p,int sA
 	 }
 }
 
-void rmsub_stride(double* A, double* B, double* C,int rows,int cols,int p,int sA,int sB,int sC) {
+void rmsub_stride(float* A, float* B, float* C,int rows,int cols,int p,int sA,int sB,int sC) {
 	int i,j,u,v,w;
 	if (rows + cols + p <= CUTOFF) {
 		for (i = 0; i < rows; ++i) {
@@ -628,15 +628,15 @@ void rmsub_stride(double* A, double* B, double* C,int rows,int cols,int p,int sA
 	 }
 }
 
-void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, int sC) {
+void srecmult(float* A, float* B, float* C,int m,int n, int p,int sA,int sB, int sC) {
 	register int i,j,k;
 	int u,v,t;
-	double sum;
-	double *A1,*B1;
-	double *a11,*a12,*a21,*a22;
-	double *b11,*b12,*b21,*b22;
-	double *c11,*c12,*c21,*c22;
-	double *m1,*m2,*m3,*m4,*m5,*m6,*m7;
+	float sum;
+	float *A1,*B1;
+	float *a11,*a12,*a21,*a22;
+	float *b11,*b12,*b21,*b22;
+	float *c11,*c12,*c21,*c22;
+	float *m1,*m2,*m3,*m4,*m5,*m6,*m7;
 	int sm1,sm2,sm3,sm4,sm5,sm6,sm7;
 	int sA1,sB1;
 	if (m + n + p <= CUTOFF) {
@@ -678,13 +678,13 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		
 		// m matrices have dimension m X p each. See http://en.wikipedia.org/wiki/Strassen_algorithm
 		
-		m1 = (double*) malloc(sizeof(double) *m * p);
+		m1 = (float*) malloc(sizeof(float) *m * p);
 		sm1 = p;
 		
-		m3 = (double*) malloc(sizeof(double) *m * p);
+		m3 = (float*) malloc(sizeof(float) *m * p);
 		sm3 = p;
 		
-		m4 = (double*) malloc(sizeof(double) *m * p);
+		m4 = (float*) malloc(sizeof(float) *m * p);
 		sm4 = p;
 		
 		m2 = c21;
@@ -705,8 +705,8 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		sA1 = n;
 		sB1 = p;
 		
-		A1 = (double*) malloc(sizeof(double) * m * n);
-		B1 = (double*) malloc(sizeof(double) * n * p);
+		A1 = (float*) malloc(sizeof(float) * m * n);
+		B1 = (float*) malloc(sizeof(float) * n * p);
 		
 		madd_stride(a11,a22,A1,m,n,sA,sA,sA1);
 		
@@ -720,7 +720,7 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		
 		//m2
 		
-		A1 = (double*) malloc(sizeof(double) * m * n);
+		A1 = (float*) malloc(sizeof(float) * m * n);
 		
 		madd_stride(a21,a22,A1,m,n,sA,sA,sA1);
 				
@@ -731,7 +731,7 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		
 		//m3
 		
-		B1 = (double*) malloc(sizeof(double) * n * p);
+		B1 = (float*) malloc(sizeof(float) * n * p);
 		//rmsub_stride(B + p,B + p + n * sC,B1,n,p,m,sC,sC,sC/2);
 		msub_stride(b12,b22,B1,n,p,sB,sB,sB1);
 		srecmult(a11,B1,m3,m,n,p,sA,sB1,sm3);
@@ -740,7 +740,7 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		
 		//m4
 		
-		B1 = (double*) malloc(sizeof(double) * n * p);
+		B1 = (float*) malloc(sizeof(float) * n * p);
 		//rmsub_stride(B + p,B + p + n * sC,B1,n,p,m,sC,sC,sC/2);
 		msub_stride(b21,b11,B1,n,p,sB,sB,sB1);
 		srecmult(a22,B1,m4,m,n,p,sA,sB1,sm4);
@@ -749,7 +749,7 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		
 		//m5
 		
-		A1 = (double*) malloc(sizeof(double) * m * n);
+		A1 = (float*) malloc(sizeof(float) * m * n);
 		
 		madd_stride(a11,a12,A1,m,n,sA,sA,sA1);
 				
@@ -760,8 +760,8 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		
 		//m6
 		
-		A1 = (double*) malloc(sizeof(double) * m * n);
-		B1 = (double*) malloc(sizeof(double) * n * p);
+		A1 = (float*) malloc(sizeof(float) * m * n);
+		B1 = (float*) malloc(sizeof(float) * n * p);
 		
 		msub_stride(a21,a11,A1,m,n,sA,sA,sA1);
 		madd_stride(b11,b12,B1,n,p,sB,sB,sB1);
@@ -772,8 +772,8 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		
 		//m7
 		
-		A1 = (double*) malloc(sizeof(double) * m * n);
-		B1 = (double*) malloc(sizeof(double) * n * p);
+		A1 = (float*) malloc(sizeof(float) * m * n);
+		B1 = (float*) malloc(sizeof(float) * n * p);
 		
 		msub_stride(a12,a22,A1,m,n,sA,sA,sA1);
 		madd_stride(b21,b22,B1,n,p,sB,sB,sB1);
@@ -785,7 +785,7 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		
 		// c11
 		
-		A1 = (double*) malloc(sizeof(double) * m * p);
+		A1 = (float*) malloc(sizeof(float) * m * p);
 		sA1 = p;
 		madd_stride(m1,m7,m7,m,p,sm1,sm7,sm7);
 		msub_stride(m4,m5,A1,m,p,sm4,sm5,sA1);
@@ -796,7 +796,7 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 		
 		// c22
 		
-		A1 = (double*) malloc(sizeof(double) * m * p);
+		A1 = (float*) malloc(sizeof(float) * m * p);
 		sA1 = p;
 		madd_stride(m1,m6,m6,m,p,sm1,sm6,sm6);
 		msub_stride(m3,m2,A1,m,p,sm3,sm2,sA1);
@@ -818,17 +818,17 @@ void srecmult(double* A, double* B, double* C,int m,int n, int p,int sA,int sB, 
 	}
 }
 
-void smult(double* A, double* B, double* C,int m,int n, int p) {
+void smult(float* A, float* B, float* C,int m,int n, int p) {
 	int a,b,c,nrec;
-	double *X,*Y,*Z,*P;
+	float *X,*Y,*Z,*P;
 	a = m;
 	b = n;
 	c = p;
 	nrec = findrec(&a,&b,&c);
-	X = (double*) malloc(sizeof(double) * a * b);
-	Y = (double*) malloc(sizeof(double) * b * c);
-	Z = (double*) malloc(sizeof(double) * a * c);
-	P = (double*) malloc(sizeof(double) * (a/2) * (c/2));
+	X = (float*) malloc(sizeof(float) * a * b);
+	Y = (float*) malloc(sizeof(float) * b * c);
+	Z = (float*) malloc(sizeof(float) * a * c);
+	P = (float*) malloc(sizeof(float) * (a/2) * (c/2));
 
 	
 	add_zero_pad(A,m,n,a-m,b-n,X);
@@ -847,7 +847,7 @@ void smult(double* A, double* B, double* C,int m,int n, int p) {
 	
 }
 
-void mmult(double* A, double* B, double* C,int m,int n, int p) {
+void mmult(float* A, float* B, float* C,int m,int n, int p) {
 	if (m+n+p <= CUTOFF/2) {
 		nmult(A,B,C,m,n,p);
 	} else {
@@ -855,15 +855,15 @@ void mmult(double* A, double* B, double* C,int m,int n, int p) {
 	}
 }
 
-static int pludecomp(double *A,int N,int *ipiv) {
+static int pludecomp(float *A,int N,int *ipiv) {
 	int k,j,l,c1,c2,mind,tempi;
-	double ld,mult,mval,temp;
+	float ld,mult,mval,temp;
 	for(k=0;k < N;++k)
 		ipiv[k] = k;
 	
 	for(k = 0; k < N-1; ++k) {
 		//c2 = k*N;
-		mval = fabs(A[k*N + k]);
+		mval = fabsf(A[k*N + k]);
 		mind = k;
 		for (j=k+1; j < N;++j) {
 			if (mval < fabs(A[j*N + k])) {
@@ -890,7 +890,7 @@ static int pludecomp(double *A,int N,int *ipiv) {
 			for (j = k+1; j < N; ++j) {
 				c1 = j*N;
 				mult = A[c1+k] /= ld;
-				//printf("\n k %d j %d mult %lf \n",k,j,mult);
+				//printf("\n k %d j %d mult %f \n",k,j,mult);
 				for(l = k+1; l < N; ++l) {
 					A[c1+l] -= mult * A[c2 + l];
 				}
@@ -902,16 +902,16 @@ static int pludecomp(double *A,int N,int *ipiv) {
 	
 }
 
-void ludecomp(double *A,int N,int *ipiv) {
+void ludecomp(float *A,int N,int *ipiv) {
 	pludecomp(A,N,ipiv);
 }
 
-void linsolve(double *A,int N,double *b,int *ipiv,double *x) {
+void linsolve(float *A,int N,float *b,int *ipiv,float *x) {
 	int i,j,c1,l;
-	double *y;
-	double sum;
+	float *y;
+	float sum;
 	
-	y = (double*) malloc(sizeof(double) *N);
+	y = (float*) malloc(sizeof(float) *N);
 	/*
 	 * Two step Solution L * U * x = b
 	 * Let U*x = y
@@ -958,12 +958,12 @@ void linsolve(double *A,int N,double *b,int *ipiv,double *x) {
 	free(y);
 }
 
-void minverse(double *A,int N,int *ipiv,double *inv) {
+void minverse(float *A,int N,int *ipiv,float *inv) {
 	int i,j,stride;
-	double *col,*x;
+	float *col,*x;
 	
-	col = (double*) malloc(sizeof(double) * N);
-	x = (double*) malloc(sizeof(double) * N);
+	col = (float*) malloc(sizeof(float) * N);
+	x = (float*) malloc(sizeof(float) * N);
 	
 	for (i = 0; i < N; ++i) {
 		col[i] = 0.;
@@ -985,7 +985,7 @@ void minverse(double *A,int N,int *ipiv,double *inv) {
 	free(col);
 }
 
-void eye(double *mat,int N) {
+void eye(float *mat,int N) {
 	int i,j,t;
 	for(i = 0;i < N;++i) {
 		for(j =0; j < N;++j) {
@@ -1000,12 +1000,12 @@ void eye(double *mat,int N) {
 	}
 }
 
-static double house_1(double*x,int N,double *v) {
-	double beta,mu,temp;
-	double *sigma;
+static float house_1(float*x,int N,float *v) {
+	float beta,mu,temp;
+	float *sigma;
 	int i;
 	
-	sigma = (double*) malloc(sizeof(double) * 1);
+	sigma = (float*) malloc(sizeof(float) * 1);
 	
 	if (N > 1) {
 		mmult(x+1,x+1,sigma,1,N-1,1);
@@ -1023,7 +1023,7 @@ static double house_1(double*x,int N,double *v) {
 	} else if (sigma[0] == 0. && x[0] < 0.) {
 		beta = -2.;
 	}else {
-		mu = sqrt(sigma[0] + x[0] * x[0]);
+		mu = sqrtf(sigma[0] + x[0] * x[0]);
 		
 		if (x[0] <= 0.) {
 			v[0] = x[0] - mu;
@@ -1032,7 +1032,7 @@ static double house_1(double*x,int N,double *v) {
 		}
 		temp = v[0];
 		
-		beta = (2.0 * v[0] * v[0]) /(sigma[0] + v[0] * v[0]);
+		beta = (2.0f * v[0] * v[0]) /(sigma[0] + v[0] * v[0]);
 		
 		for (i = 0; i < N;++i) {
 			v[i] /= temp;
@@ -1044,18 +1044,18 @@ static double house_1(double*x,int N,double *v) {
 	return beta;
 }
 
-double house_2(double*x,int N,double *v) {
-	double sgn,beta,sc;
-	double *sigma,*e;
+float house_2(float*x,int N,float *v) {
+	float sgn,beta,sc;
+	float *sigma,*e;
 	int i;
 	
-	sigma = (double*) malloc(sizeof(double) * 1);
-	e = (double*) malloc(sizeof(double) * N);
+	sigma = (float*) malloc(sizeof(float) * 1);
+	e = (float*) malloc(sizeof(float) * N);
 	
 	beta = 2.0;
 	sgn = 1.0;
 	mmult(x,x,sigma,1,N,1);
-	sigma[0] = sqrt(sigma[0]);
+	sigma[0] = sqrtf(sigma[0]);
 	
 	e[0] =1.;
 	for (i = 1; i < N;++i) {
@@ -1081,7 +1081,7 @@ double house_2(double*x,int N,double *v) {
 	}
 	
 	mmult(v,v,sigma,1,N,1);
-	sigma[0] = sqrt(sigma[0]);
+	sigma[0] = sqrtf(sigma[0]);
 	
 	for(i = 0; i < N;++i) {
 		v[i] = v[i] / sigma[0];
@@ -1092,17 +1092,17 @@ double house_2(double*x,int N,double *v) {
 	return beta;
 }
 
-double house(double*x,int N,double *v) {
-	double beta;
+float house(float*x,int N,float *v) {
+	float beta;
 	beta = house_1(x,N,v);
 	return beta;
 }
 
 
-void housemat(double *v, int N,double beta,double *mat) {
-	double *temp;
+void housemat(float *v, int N,float beta,float *mat) {
+	float *temp;
 	
-	temp = (double*) malloc(sizeof(double) * N * N);
+	temp = (float*) malloc(sizeof(float) * N * N);
 	eye(mat,N);
 	mmult(v,v,temp,N,1,N);
 	scale(temp,N,N,beta);
@@ -1111,19 +1111,19 @@ void housemat(double *v, int N,double beta,double *mat) {
 	free(temp);
 }
 
-void qrdecomp(double *A, int M, int N,double *bvec) {
+void qrdecomp(float *A, int M, int N,float *bvec) {
 	int j,i,k,u,t;
-	double *x,*v,*AT,*w;
-	double beta;
+	float *x,*v,*AT,*w;
+	float beta;
 	
 	if (M < N) {
 			printf("M should be greater than or equal to N");
 			exit(1);
 	}
-	x = (double*) malloc(sizeof(double) * M);
-	v = (double*) malloc(sizeof(double) * M);
-	AT = (double*) malloc(sizeof(double) * M * N);
-	w = (double*) malloc(sizeof(double) * M * M);
+	x = (float*) malloc(sizeof(float) * M);
+	v = (float*) malloc(sizeof(float) * M);
+	AT = (float*) malloc(sizeof(float) * M * N);
+	w = (float*) malloc(sizeof(float) * M * M);
 	
 	for(j = 0; j < N;++j) {
 		for(i=j;i < M;++i) {
@@ -1170,14 +1170,14 @@ void qrdecomp(double *A, int M, int N,double *bvec) {
 	
 }
 
-void getQR(double *A,int M,int N,double *bvec,double *Q, double *R) {
+void getQR(float *A,int M,int N,float *bvec,float *Q, float *R) {
 	int i,j,k,t,u;
-	double *x,*v,*AT,*w;
+	float *x,*v,*AT,*w;
 	
-	x = (double*) malloc(sizeof(double) * M);
-	v = (double*) malloc(sizeof(double) * M);
-	AT = (double*) malloc(sizeof(double) * M * N);
-	w = (double*) malloc(sizeof(double) * M * M);
+	x = (float*) malloc(sizeof(float) * M);
+	v = (float*) malloc(sizeof(float) * M);
+	AT = (float*) malloc(sizeof(float) * M * N);
+	w = (float*) malloc(sizeof(float) * M * M);
 	
 	for(i = 0; i < N;++i) {
 		t = i *N;
@@ -1237,19 +1237,19 @@ void getQR(double *A,int M,int N,double *bvec,double *Q, double *R) {
 	free(w);
 }
 
-void hessenberg(double *A,int N) {
+void hessenberg(float *A,int N) {
 	int k,i,j,t,u;
-	double *x,*v,*AT,*w;
-	double beta;
-	x = (double*) malloc(sizeof(double) * N);
-	v = (double*) malloc(sizeof(double) * N);
-	AT = (double*) malloc(sizeof(double) * N * N);
-	w = (double*) malloc(sizeof(double) * N);
+	float *x,*v,*AT,*w;
+	float beta;
+	x = (float*) malloc(sizeof(float) * N);
+	v = (float*) malloc(sizeof(float) * N);
+	AT = (float*) malloc(sizeof(float) * N * N);
+	w = (float*) malloc(sizeof(float) * N);
 	
 	for (k = 0; k < N-2;++k) {
 		for(i=k + 1;i < N;++i) {
 			x[i-k-1] = A[i*N+k];
-			//printf("x %lf \n",x[i-k-1]);
+			//printf("x %f \n",x[i-k-1]);
 			
 		}
 		
@@ -1310,18 +1310,18 @@ void hessenberg(double *A,int N) {
 	free(w);
 }
 
-void francisQR(double *A,int N) {
+void francisQR(float *A,int N) {
 	int m,n,k,q,r,t,u,i,j;
-	double s,t2,beta;
-	double *x,*v,*AT,*w;
+	float s,t2,beta;
+	float *x,*v,*AT,*w;
 	int NN;
 	/*
 	 * Reference - Algorithm 7.5.1 Golub,van Loan Matrix Computations 3rd Edition
 	 */ 
-	x = (double*) malloc(sizeof(double) * 3);
-	v = (double*) malloc(sizeof(double) * 3);
-	AT = (double*) malloc(sizeof(double) * 3 * N);
-	w = (double*) malloc(sizeof(double) * N);
+	x = (float*) malloc(sizeof(float) * 3);
+	v = (float*) malloc(sizeof(float) * 3);
+	AT = (float*) malloc(sizeof(float) * 3 * N);
+	w = (float*) malloc(sizeof(float) * N);
 	n = N-1;
 	m = n-1;
 	NN = N*N;
@@ -1454,9 +1454,9 @@ void francisQR(double *A,int N) {
 	
 }
 
-void eig22(double *A, int stride,double *eigre,double *eigim) {
+void eig22(float *A, int stride,float *eigre,float *eigim) {
 	int N;
-	double a11,a12,a21,a22,c,s,c2,s2,cs,t1,t,t2,at11,at12,at21,at22;
+	float a11,a12,a21,a22,c,s,c2,s2,cs,t1,t,t2,at11,at12,at21,at22;
 	N = stride;
 	
 	a11 = A[0];
@@ -1465,12 +1465,12 @@ void eig22(double *A, int stride,double *eigre,double *eigim) {
 	a22 = A[N+1];
 	
 	if ( (a12 + a21) == 0) {
-		c = 1./sqrt(2.0);
+		c = 1.0f/sqrtf(2.0f);
 		s = c;
 	} else {
 		t1 = (a11 - a22) / (a12 + a21);
-		t = t1 /(1. + sqrt(1+t1*t1));
-		c = 1./sqrt(1 + t*t);
+		t = t1 /(1.0f + sqrtf(1+t1*t1));
+		c = 1.0f/sqrtf(1 + t*t);
 		s = c*t;
 	}
 	
@@ -1484,8 +1484,8 @@ void eig22(double *A, int stride,double *eigre,double *eigim) {
 	at22 = c2 * a22 + s2 * a11 + cs * (a12 + a21);
 	
 	eigre[0] = eigre[1] = at11;
-	eigim[0] = sqrt(-at12 * at21);
-	eigim[1] = -sqrt(-at12 * at21);
+	eigim[0] = sqrtf(-at12 * at21);
+	eigim[1] = -sqrtf(-at12 * at21);
 	
 	if ( at12*at21 >= 0) {
 		if (at12 == 0) {
@@ -1495,7 +1495,7 @@ void eig22(double *A, int stride,double *eigre,double *eigim) {
 			s2 = 1;
 			cs = 0;
 		} else {
-			t = sqrt(at21/at12);
+			t = sqrtf(at21/at12);
 			t2 = t * t;
 			cs = t/(1+t2);
 			c2 = (1+t2);
@@ -1509,15 +1509,15 @@ void eig22(double *A, int stride,double *eigre,double *eigim) {
 	
 }
 
-int francis_iter(double *A, int N, double *H) {
+int francis_iter(float *A, int N, float *H) {
 	int success,brkpoint;
 	int i,j,it,p,q,t,u;
-	double *temp;
+	float *temp;
 	success = 0;
 	brkpoint = 30 * N;
 	it = 0;
 	p = N - 1;
-	temp = (double*) malloc(sizeof(double) * N * N);
+	temp = (float*) malloc(sizeof(float) * N * N);
 	for(i = 0; i < N*N;++i) {
 		H[i] = A[i];
 	}
@@ -1576,9 +1576,9 @@ int francis_iter(double *A, int N, double *H) {
 	return success;
 }
 
-static void eig2t(double *A, int stride) {
+static void eig2t(float *A, int stride) {
 	int N;
-	double a11,a12,a21,a22,c,s,c2,s2,cs,t1,t,at11,at12,at21,at22;
+	float a11,a12,a21,a22,c,s,c2,s2,cs,t1,t,at11,at12,at21,at22;
 	N = stride;
 	
 	a11 = A[0];
@@ -1587,12 +1587,12 @@ static void eig2t(double *A, int stride) {
 	a22 = A[N+1];
 	
 	if ( (a12 + a21) == 0) {
-		c = 1./sqrt(2.0);
+		c = 1.0f/sqrtf(2.0f);
 		s = c;
 	} else {
 		t1 = (a11 - a22) / (a12 + a21);
-		t = t1 /(1. + sqrt(1+t1*t1));
-		c = 1./sqrt(1 + t*t);
+		t = t1 /(1.0f + sqrtf(1+t1*t1));
+		c = 1.0f/sqrtf(1 + t*t);
 		s = c*t;
 	}
 	
@@ -1611,11 +1611,11 @@ static void eig2t(double *A, int stride) {
 
 }
 
-void eig(double *A,int N,double *eigre,double *eigim) {
+void eig(float *A,int N,float *eigre,float *eigim) {
 	int i,t,u,n;
-	double *H;
-	double t1,t2,cs;
-	H = (double*) malloc(sizeof(double) * N * N);
+	float *H;
+	float t1,t2,cs;
+	H = (float*) malloc(sizeof(float) * N * N);
 	n = N - 1;
 	francis_iter(A,N,H);
 	//mdisplay(H,N,N);
@@ -1641,13 +1641,13 @@ void eig(double *A,int N,double *eigre,double *eigim) {
 			if (H[u+i+1] * H[t+i] < 0.) {
 				eigre[i] = H[u+i];
 				eigre[i+1] = H[t+i+1];
-				eigim[i] = sqrt(-H[u+i+1] * H[t+i]);
-				eigim[i+1] = -sqrt(-H[u+i+1] * H[t+i]);
+				eigim[i] = sqrtf(-H[u+i+1] * H[t+i]);
+				eigim[i+1] = -sqrtf(-H[u+i+1] * H[t+i]);
 			} else {
 				if (H[u+i+1] == 0.) {
 					cs = 0.;
 				} else {
-					t1 = sqrt(H[t+i]/H[u+i+1]);
+					t1 = sqrtf(H[t+i]/H[u+i+1]);
 					t2 = t1 * t1;
 					cs = t1/(1+t2);
 				}
@@ -1676,14 +1676,14 @@ void eig(double *A,int N,double *eigre,double *eigim) {
 	free(H);
 }
 
-static int rcholu(double *A,int N, int stride, double *U22) {
+static int rcholu(float *A,int N, int stride, float *U22) {
 	int sc;
 	int j,i,u,w;
-	double u11;
+	float u11;
 	
 	if (N == 1) {
 		if (A[0] > 0) {
-			A[0] = sqrt(A[0]);
+			A[0] = sqrtf(A[0]);
 			return 0;
 		} else {
 			return -1;
@@ -1692,7 +1692,7 @@ static int rcholu(double *A,int N, int stride, double *U22) {
 		if (A[0] < 0) {
 			return -1;
 		}
-		u11 = sqrt(A[0]);
+		u11 = sqrtf(A[0]);
 		A[0] = u11;
 		for (j = 1; j < N;++j) {
 			A[j] /= u11;
@@ -1717,10 +1717,10 @@ static int rcholu(double *A,int N, int stride, double *U22) {
 	
 }
 
-static int rbcholu(double *A,int N, int stride, double *UB, double *UT) {
+static int rbcholu(float *A,int N, int stride, float *UB, float *UT) {
 	int bs,bb,i,j,Nb,t,k,u,v,w,sc;
-	double *b,*x,*U12,*U12T;
-	double sum;
+	float *b,*x,*U12,*U12T;
+	float sum;
 	
 	bs = (int) BLOCKSIZE;
 	bb = bs*bs;
@@ -1732,10 +1732,10 @@ static int rbcholu(double *A,int N, int stride, double *UB, double *UT) {
 		}
 	} else {
 		Nb = N - bs;
-		x = (double*) malloc(sizeof(double) * bs);
-		b = (double*) malloc(sizeof(double) * bs);
-		U12T = (double*) malloc(sizeof(double) * Nb * bs);
-		U12 = (double*) malloc(sizeof(double) * Nb * bs);
+		x = (float*) malloc(sizeof(float) * bs);
+		b = (float*) malloc(sizeof(float) * bs);
+		U12T = (float*) malloc(sizeof(float) * Nb * bs);
+		U12 = (float*) malloc(sizeof(float) * Nb * bs);
 		rcholu(A,bs,stride,UB); // U11
 		
 		for (i =0; i < bs;++i) {
@@ -1792,10 +1792,10 @@ static int rbcholu(double *A,int N, int stride, double *UB, double *UT) {
 	return sc;
 }
 
-int cholu(double *A, int N) {
+int cholu(float *A, int N) {
 	int stride,i,j,t,sc;
-	double *U22;
-	U22 = (double*) malloc(sizeof(double) * N * N);
+	float *U22;
+	U22 = (float*) malloc(sizeof(float) * N * N);
 	stride = N; 
 	
 	sc = rcholu(A,N,stride,U22);
@@ -1812,12 +1812,12 @@ int cholu(double *A, int N) {
 	
 }
 
-int bcholu(double *A, int N) {
+int bcholu(float *A, int N) {
 	int stride,i,j,t,b,sc;
-	double *UB,*UT;
+	float *UB,*UT;
 	b = (int) BLOCKSIZE;
-	UT = (double*) malloc(sizeof(double) * N * N);
-	UB = (double*) malloc(sizeof(double) * b * b);
+	UT = (float*) malloc(sizeof(float) * N * N);
+	UB = (float*) malloc(sizeof(float) * b * b);
 	stride = N; 
 	
 	sc = rbcholu(A,N,stride,UB,UT);
@@ -1836,7 +1836,7 @@ int bcholu(double *A, int N) {
 	
 }
 
-int chol(double *A, int N) {
+int chol(float *A, int N) {
 	int sc;
 	if ( N <= (int) BLOCKSIZE) {
 		sc = cholu(A,N);
@@ -1846,9 +1846,9 @@ int chol(double *A, int N) {
 	return sc;
 }
 
-static void rchold(double *A,int N, int stride, double *U22) {
+static void rchold(float *A,int N, int stride, float *U22) {
 	int j,i,u,w;
-	double d1;
+	float d1;
 	
 	if (N == 1) {
 		return;
@@ -1873,10 +1873,10 @@ static void rchold(double *A,int N, int stride, double *U22) {
 		
 }
 
-void chold(double *A, int N) {
+void chold(float *A, int N) {
 	int stride,i,j,t;
-	double *U22;
-	U22 = (double*) malloc(sizeof(double) * N * N);
+	float *U22;
+	U22 = (float*) malloc(sizeof(float) * N * N);
 	stride = N; 
 	
 	rchold(A,N,stride,U22);
@@ -1892,7 +1892,7 @@ void chold(double *A, int N) {
 	
 }
 
-void svd_sort(double *U,int M,int N,double *V,double *q) {
+void svd_sort(float *U,int M,int N,float *V,float *q) {
 	/*
 	 * Pavel Sakov's CSA SVD sort routine is used with some minor
 	 * modifications. See The License below
@@ -1921,12 +1921,12 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 OF SUCH DAMAGE.
 	 */
 	int i,j;
-	double *UT,*VT,*qq;
+	float *UT,*VT,*qq;
 	int *pos;
 
-	UT = (double*) malloc(sizeof(double) * N * M);
-	VT = (double*) malloc(sizeof(double) * N * N);
-	qq = (double*) malloc(sizeof(double) * N);
+	UT = (float*) malloc(sizeof(float) * N * M);
+	VT = (float*) malloc(sizeof(float) * N * N);
+	qq = (float*) malloc(sizeof(float) * N);
 	pos = (int*) malloc(sizeof(int) * N);
 
 	for(i = 0;i < N;++i) {
@@ -1964,10 +1964,10 @@ OF SUCH DAMAGE.
 
 }
 
-int svd(double *A,int M,int N,double *U,double *V,double *q) {
+int svd(float *A,int M,int N,float *U,float *V,float *q) {
 	int i,j,k,l,t,t2,ierr,cancel,iter,l1;
-	double eps,g,x,s,temp,f,h,c,y,z,scale;
-	double *e;
+	float eps,g,x,s,temp,f,h,c,y,z,scale;
+	float *e;
 	/*
      THIS SUBROUTINE IS THE MODIFIED C TRANSLATION OF THE
      EISPACK FORTRAN TRANSLATION OF THE ALGOL PROCEDURE SVD,
@@ -1994,7 +1994,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 		printf("Retry By Transposing the Input Matrix");
 		return -1;
 	}
-	e = (double*) malloc(sizeof(double) * N);
+	e = (float*) malloc(sizeof(float) * N);
 	ierr = 0;
 	eps = macheps();
 	g = scale = x = 0.0;
@@ -2012,7 +2012,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 
 		if (i < M) {
 			for(k = i; k < M;++k) {
-				scale += fabs(U[k*N+i]);
+				scale += fabsf(U[k*N+i]);
 			}
 
 			if (scale != 0.0) {
@@ -2023,7 +2023,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 					s += temp*temp;
 				}
 				f = U[i*N+i];
-				g = (f < 0) ? sqrt(s) : -sqrt(s);
+				g = (f < 0) ? sqrtf(s) : -sqrtf(s);
 				h = f * g - s;
 				U[i*N+i] = f - g;
 
@@ -2055,7 +2055,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
         if (i < M && i != N - 1) {
         	t = i *N;
         	for(k = l; k < M;++k) {
-        		scale += fabs(U[t+k]);
+        		scale += fabsf(U[t+k]);
         	}
         	if (scale != 0.0) {
         		for(k = l; k < N;++k) {
@@ -2064,7 +2064,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
         			s = s + temp*temp;
         		}
         		f = U[t+l];
-        		g = (f < 0) ? sqrt(s) : -sqrt(s);
+        		g = (f < 0) ? sqrtf(s) : -sqrtf(s);
                 h = f * g - s;
                 U[t+l] = f - g;
                 for(k = l;k < N;++k) {
@@ -2087,7 +2087,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 
         }
 
-        temp = fabs(q[i]) + fabs(e[i]);
+        temp = fabsf(q[i]) + fabsf(e[i]);
 
         if (x < temp) {
         	x = temp;
@@ -2118,7 +2118,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 			g = 0.0;
 		} else {
 			f = U[i*N+i];
-			g = (f < 0) ? sqrt(s) : -sqrt(s);
+			g = (f < 0) ? sqrtf(s) : -sqrtf(s);
 			h = f * g - s;
 			U[i*N+i] = f - g;
 
@@ -2148,7 +2148,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
         	g = 0.0;
         } else {
         	f = U[t+l];
-			g = (f < 0) ? sqrt(s) : -sqrt(s);
+			g = (f < 0) ? sqrtf(s) : -sqrtf(s);
 			h = f * g - s;
             U[t+l] = f - g;
             for(k = l;k < N;++k) {
@@ -2282,7 +2282,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 						break;
 					}
 					g = q[i];
-					h = q[i] = hypot(f,g);
+					h = q[i] = hypotf(f,g);
 					c = g/h;
 					s = -f/h;
 					for(j = 0; j < M;++j) {
@@ -2301,8 +2301,8 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 				y = q[k-1];
 				g = e[k-1];
 				h = e[k];
-				f = 0.5 * (((g + z) / h) * ((g - z) / y) + y / h - h / y);
-				g = hypot(f,1.0);
+				f = 0.5f * (((g + z) / h) * ((g - z) / y) + y / h - h / y);
+				g = hypotf(f,1.0);
 				if (f < 0.0) {
 					temp = f - g;
 				} else {
@@ -2318,7 +2318,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 					y = q[i];
 					h = s * g;
 					g = c * g;
-					e[i-1] = z = hypot(f,h);
+					e[i-1] = z = hypotf(f,h);
                     c = f / z;
                     s = h / z;
                     f = x * c + g * s;
@@ -2332,7 +2332,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
                         V[t+i-1] = x * c + z * s;
                         V[t+i] = z * c - x * s;
                     }
-                    q[i-1] = z = hypot(f,h);
+                    q[i-1] = z = hypotf(f,h);
                     if (z != 0.0) {
                         c = f / z;
                         s = h / z;
@@ -2371,7 +2371,7 @@ int svd(double *A,int M,int N,double *U,double *V,double *q) {
 	return ierr;
 }
 
-int svd_transpose(double *A, int M, int N, double *U, double *V, double *q) {
+int svd_transpose(float *A, int M, int N, float *U, float *V, float *q) {
 	int ret;
 	/* Call this routine if M < N
 	* U = MXM
@@ -2390,22 +2390,22 @@ int svd_transpose(double *A, int M, int N, double *U, double *V, double *q) {
 	return ret;
 }
 
-static int rank_c(double *A, int M,int N) {
+static int rank_c(float *A, int M,int N) {
 	int i,rnk,ret;
-	double eps,tol,szmax,qmax;
-	double *U,*V,*q;
+	float eps,tol,szmax,qmax;
+	float *U,*V,*q;
 
-	U = (double*) malloc(sizeof(double) * M*N);
-	V = (double*) malloc(sizeof(double) * N*N);
-	q = (double*) malloc(sizeof(double) * N);
+	U = (float*) malloc(sizeof(float) * M*N);
+	V = (float*) malloc(sizeof(float) * N*N);
+	q = (float*) malloc(sizeof(float) * N);
 
 	eps = macheps();
 	rnk = 0;
 	if (M < N) {
 		//mtranspose(A,M,N,U);
-		szmax = (double) N;
+		szmax = (float) N;
 	} else {
-		szmax = (double) M;
+		szmax = (float) M;
 	}
 	ret = svd(A,M,N,U,V,q);
 	qmax = q[0];
@@ -2434,11 +2434,11 @@ static int rank_c(double *A, int M,int N) {
 	return rnk;
 }
 
-int rank(double *A, int M,int N) {
+int rank(float *A, int M,int N) {
 	int rnk;
-	double *AT;
+	float *AT;
 
-	AT = (double*) malloc(sizeof(double) * M*N);
+	AT = (float*) malloc(sizeof(float) * M*N);
 
 	if (M < N) {
 		mtranspose(A,M,N,AT);
@@ -2452,21 +2452,21 @@ int rank(double *A, int M,int N) {
 
 }
 
-int lls_svd_multi(double *A, double *b, int M,int N, double *x) {
+int lls_svd_multi(float *A, float *b, int M,int N, float *x) {
 	int rnk, ret, i;
-	double *U, *V, *q, *UT, *d;
-	double eps, tol, szmax, qmax;
+	float *U, *V, *q, *UT, *d;
+	float eps, tol, szmax, qmax;
 
 	if (M < N) {
 		printf("Rows (M) should be greater than Columns (B) \n");\
 		return -1;
 	}
 
-	U = (double*)malloc(sizeof(double)* M*N);
-	V = (double*)malloc(sizeof(double)* N*N);
-	q = (double*)malloc(sizeof(double)* N);
-	UT = (double*)malloc(sizeof(double)* M*N);
-	d = (double*)malloc(sizeof(double)* N);
+	U = (float*)malloc(sizeof(float)* M*N);
+	V = (float*)malloc(sizeof(float)* N*N);
+	q = (float*)malloc(sizeof(float)* N);
+	UT = (float*)malloc(sizeof(float)* M*N);
+	d = (float*)malloc(sizeof(float)* N);
 	/*
 	The code returns -1 if SVD computation fails else it returns the rank of the matrix A (and the real size of vector x)
 	*/
@@ -2482,7 +2482,7 @@ int lls_svd_multi(double *A, double *b, int M,int N, double *x) {
 		return -1;
 	}
 
-	szmax = (double)M;
+	szmax = (float)M;
 
 	eps = macheps();
 	rnk = 0;
@@ -2499,7 +2499,7 @@ int lls_svd_multi(double *A, double *b, int M,int N, double *x) {
 
 	mtranspose(U, M, N, UT);
 
-	d = (double*)malloc(sizeof(double)* N);
+	d = (float*)malloc(sizeof(float)* N);
 
 	mmult(UT, b, d, N, M, 1);
 

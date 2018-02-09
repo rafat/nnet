@@ -22,16 +22,16 @@ struct ndata_set {
 	int tsize;
 	int gsize;
 	int vsize;
-	double *data;
-	double *target;
-	double params[1];
+	float *data;
+	float *target;
+	float params[1];
 };
 
-void interleave(double *inp, int size, int M, double *oup);
+void interleave(float *inp, int size, int M, float *oup);
 
-void data_enter(ndata_object obj, double *data, double *target);
+void data_enter(ndata_object obj, float *data, float *target);
 
-void data_interleave_enter(ndata_object obj, double *data, double *target);
+void data_interleave_enter(ndata_object obj, float *data, float *target);
 
 void csvreader(ndata_object obj, const char *filepath, const char *delimiter, int isHeader);
 

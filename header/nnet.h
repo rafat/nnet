@@ -30,18 +30,18 @@ struct nnet_set {
 	int normmethod;// 0 - NULL, 1 - Minmax {-1,1}, 2 - Std (Mean = 0, Variance = 1}. Default = 0
 	char trainfcn[50];
 	char trainmethod[20];// Options "online" or "batch"
-	double *weight;// Weights vector including biases
-	double *gradient; // Gradient Vector
-	double *tout; // Output Vector contains outputs at all the nodes including hidden ones during the current iteration.
-	double *input;// current input
-	double *dmin;
-	double *dmax;
-	double *tmin;
-	double *tmax;
-	double *dmean;
-	double *dstd;
-	double *tmean;
-	double *tstd;
+	float *weight;// Weights vector including biases
+	float *gradient; // Gradient Vector
+	float *tout; // Output Vector contains outputs at all the nodes including hidden ones during the current iteration.
+	float *input;// current input
+	float *dmin;
+	float *dmax;
+	float *tmin;
+	float *tmax;
+	float *dmean;
+	float *dstd;
+	float *tmean;
+	float *tstd;
 	int datasize;
 	int lw;
 	int ld;
@@ -52,38 +52,38 @@ struct nnet_set {
 	int validate;
 	int verbose;
 	int batchsize;// batchsize . Used only if the batch method selected.
-	double qp_threshold;
-	double qp_shrink_factor;
-	double qp_max_factor;
-	double qp_decay;
-	double rp_eta_p;
-	double rp_eta_n;
-	double rp_delta_min;
-	double rp_init_upd;
-	double rp_max_step;
-	double rp_zero_tol;
-	double mse;
-	double tmse; // Training Set MSE
-	double gmse; // Generalization Set MSE
-	double imse;
-	double eta;
-	double alpha;
-	double steepness;
-	double eta_inc;
-	double eta_dec;
-	double perf_inc;
-	double tratio;
-	double gratio;
-	double vratio;
-	double inpnmin;
-	double inpnmax;
-	double inpnmean;
-	double inpnstd;
-	double oupnmin;
-	double oupnmax;
-	double oupnmean;
-	double oupnstd;
-	double params[1];
+	float qp_threshold;
+	float qp_shrink_factor;
+	float qp_max_factor;
+	float qp_decay;
+	float rp_eta_p;
+	float rp_eta_n;
+	float rp_delta_min;
+	float rp_init_upd;
+	float rp_max_step;
+	float rp_zero_tol;
+	float mse;
+	float tmse; // Training Set MSE
+	float gmse; // Generalization Set MSE
+	float imse;
+	float eta;
+	float alpha;
+	float steepness;
+	float eta_inc;
+	float eta_dec;
+	float perf_inc;
+	float tratio;
+	float gratio;
+	float vratio;
+	float inpnmin;
+	float inpnmax;
+	float inpnmean;
+	float inpnstd;
+	float oupnmin;
+	float oupnmax;
+	float oupnmean;
+	float oupnstd;
+	float params[1];
 };
 
 typedef struct ndata_set* ndata_object;
@@ -97,16 +97,16 @@ struct ndata_set {
 	int tsize;
 	int gsize;
 	int vsize;
-	double *data;
-	double *target;
-	double params[1];
+	float *data;
+	float *target;
+	float params[1];
 };
 
-void interleave(double *inp, int size, int M, double *oup);
+void interleave(float *inp, int size, int M, float *oup);
 
-void data_enter(ndata_object obj, double *data, double *target);
+void data_enter(ndata_object obj, float *data, float *target);
 
-void data_interleave_enter(ndata_object obj, double *data, double *target);
+void data_interleave_enter(ndata_object obj, float *data, float *target);
 
 void csvreader(ndata_object obj, const char *filepath, const char *delimiter, int isHeader);
 
@@ -120,19 +120,19 @@ void ndata_check(ndata_object obj);
 
 void ndata_free(ndata_object obj);
 
-void set_learning_rate(nnet_object obj, double eta);
+void set_learning_rate(nnet_object obj, float eta);
 
-void set_momentum(nnet_object obj, double alpha);
+void set_momentum(nnet_object obj, float alpha);
 
-void set_target_mse(nnet_object obj, double mse);
+void set_target_mse(nnet_object obj, float mse);
 
-void set_generalization_mse(nnet_object obj, double gmse);
+void set_generalization_mse(nnet_object obj, float gmse);
 
 void set_max_epoch(nnet_object obj, int max_epoch);
 
 void set_verbose(nnet_object obj, int verb);
 
-void set_training_ratios(nnet_object obj, double tratio, double gratio, double vratio);
+void set_training_ratios(nnet_object obj, float tratio, float gratio, float vratio);
 
 void set_trainfcn(nnet_object obj, char *trainfcn);
 
@@ -140,9 +140,9 @@ void set_trainmethod(nnet_object obj,char *method, int batchsize);// batchsize i
 
 void set_norm_method(nnet_object obj, int nmethod);
 
-void set_mnmx(nnet_object obj, double inpmin, double inpmax, double oupmin, double oupmax);
+void set_mnmx(nnet_object obj, float inpmin, float inpmax, float oupmin, float oupmax);
 
-void set_mstd(nnet_object obj, double inpmean, double inpstd, double oupmean, double oupstd);
+void set_mstd(nnet_object obj, float inpmean, float inpstd, float oupmean, float oupstd);
 
 void initweights(nnet_object obj);
 
@@ -152,35 +152,35 @@ void shuffle(int N, int *index);
 
 void initweights_seed(nnet_object obj, int seed);
 
-void feedforward(nnet_object obj, double *inp, int leninp, int lenoup, double *oup,double *tempi, double *tempo);
+void feedforward(nnet_object obj, float *inp, int leninp, int lenoup, float *oup,float *tempi, float *tempo);
 
-void backpropagate(nnet_object obj, double *output, double *desired, int lenoup, double *delta, double *tinp);
+void backpropagate(nnet_object obj, float *output, float *desired, int lenoup, float *delta, float *tinp);
 
-void mapminmax(double *x, int N, double ymin, double ymax, double *y);
+void mapminmax(float *x, int N, float ymin, float ymax, float *y);
 
-void mapstd(double *x, int N, double ymean, double ystd, double *y);
+void mapstd(float *x, int N, float ymean, float ystd, float *y);
 
-void premnmx(int size, double *p, int leninp, double *t, int lenoup, double *pn, double *tn, double ymin, double ymax, double omin, double omax,double *pmin, double *pmax, double *tmin, double *tmax);
+void premnmx(int size, float *p, int leninp, float *t, int lenoup, float *pn, float *tn, float ymin, float ymax, float omin, float omax,float *pmin, float *pmax, float *tmin, float *tmax);
 
-void applymnmx(nnet_object obj, int size, double *p, int leninp, double *pn);
+void applymnmx(nnet_object obj, int size, float *p, int leninp, float *pn);
 
-void prestd(int size, double *p, int leninp, double *t, int lenoup, double *pn, double *tn, double ymean, double ystd, double omean, double ostd, double *dmean, double *dstd, double *tmean, double *tstd);
+void prestd(int size, float *p, int leninp, float *t, int lenoup, float *pn, float *tn, float ymean, float ystd, float omean, float ostd, float *dmean, float *dstd, float *tmean, float *tstd);
 
-void postmnmx(nnet_object obj, int size, double *oupn, int lenoup, double *oup);
+void postmnmx(nnet_object obj, int size, float *oupn, int lenoup, float *oup);
 
-void poststd(nnet_object obj, int size, double *oupn, int lenoup, double *oup);
+void poststd(nnet_object obj, int size, float *oupn, int lenoup, float *oup);
 
-void train_null(nnet_object obj, int tsize, double *data, double *target);
+void train_null(nnet_object obj, int tsize, float *data, float *target);
 
-void train_mnmx(nnet_object obj, int size, double *inp, double *out);
+void train_mnmx(nnet_object obj, int size, float *inp, float *out);
 
-void train_mstd(nnet_object obj, int size, double *inp, double *out);
+void train_mstd(nnet_object obj, int size, float *inp, float *out);
 
-void train(nnet_object obj, int tsize, double *data, double *target);
+void train(nnet_object obj, int tsize, float *data, float *target);
 
-void sim(nnet_object obj, int size, double *data, double *output);
+void sim(nnet_object obj, int size, float *data, float *output);
 
-double nnet_test(nnet_object obj, int tsize, double *data, double *target);
+float nnet_test(nnet_object obj, int tsize, float *data, float *target);
 
 void nnet_save(nnet_object obj, const char *fileName);
 
