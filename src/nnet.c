@@ -2554,7 +2554,7 @@ static void epoch_mbp(nnet_object obj, int tsize, float *data, float *target, in
 
 	shuffle(tsize, index);
 
-	iters = ceil(tsize / batchsize);
+	iters = (int) ceil((double) tsize /(double) batchsize);
 
 	for (k = 0; k < iters; ++k) {
 		maxsize = (k + 1)*batchsize;
@@ -2621,7 +2621,7 @@ static void epoch_mbp_alr2(nnet_object obj, int tsize, float *data, float *targe
 
 	shuffle(tsize, index);
 
-	iters = ceil(tsize / batchsize);
+	iters = (int) ceil((double)tsize / (double)batchsize);
 
 	for (k = 0; k < iters; ++k) {
 		maxsize = (k + 1)*batchsize;
@@ -2718,9 +2718,10 @@ void train_null(nnet_object obj, int size, float *inp, float *out) {
 	int gen, val;
 
 	gen = val = 0;
-	obj->normmethod = 0;
 
 	tsize = (int) (obj->tratio * size); // training size
+	gsize = 0;
+	vsize = 0;
 	if (tsize >= size) {
 		tsize = size;
 	}

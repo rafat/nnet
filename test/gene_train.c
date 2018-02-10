@@ -29,7 +29,7 @@ int main() {
 	net = nnet_init(N, arch, actfcn);
 
 	set_trainfcn(net, "traingda");
-	set_training_ratios(net, 1.0f, 0.0f, 0.0f);
+	set_training_ratios(net, 1.0, 0.0, 0.0);
 	set_trainmethod(net, "online", patterns);
 	set_max_epoch(net, 500);
 	set_target_mse(net, 1e-05f);// Target MSE error
@@ -52,5 +52,6 @@ int main() {
 	ndata_free(data);
 	ndata_free(tdata);
 	nnet_free(net);
+
     return 0;
 }

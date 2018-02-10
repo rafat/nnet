@@ -6,7 +6,7 @@ int main() {
 	ndata_object tdata;
 	nnet_object net;
 	int inp, oup;
-	int N, tsize;
+	int tsize;
 	int isheader = 1;
 	char* tfile = "datasets/gene.test";
 	char *delimiter = " ";
@@ -27,6 +27,5 @@ int main() {
 
 	ndata_free(tdata);
 	nnet_free(net);
-
     return 0;
 }
